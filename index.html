@@ -33,52 +33,55 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 
-.upload-wrap{padding:1.25rem 0 1rem; display: flex; gap: 12px; align-items: center;}
-.upload-compact{flex: 1; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 20px; display: flex; align-items: center; gap: 14px; cursor: pointer; background: var(--surface); transition: 0.2s;}
-.upload-compact:hover{border-color:var(--accent-mid);background:var(--accent-light);}
-.upload-icon-sm{width:44px;height:44px;background:var(--accent-light);border-radius:12px;display:flex;align-items:center;justify-content:center;}
-.upload-icon-sm svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:2;}
-.btn-export{border: 1px solid var(--accent); color: var(--accent); background: white; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.2s;}
-.btn-export:hover{background: var(--accent); color: white;}
+/* AJUSTE AREA DE SUBIDA Y BOTON */
+.upload-row{display:flex; gap:12px; margin: 1.25rem 0 1rem; align-items: stretch;}
+.upload-compact{flex:1; border:1.5px dashed var(--border); border-radius:var(--radius-sm); padding:16px 20px; display:flex; align-items:center; gap:14px; cursor:pointer; background:var(--surface); transition:0.2s;}
+.upload-compact:hover{border-color:var(--accent-mid); background:var(--accent-light);}
+.upload-icon-sm{width:40px; height:40px; background:var(--accent-light); border-radius:10px; display:flex; align-items:center; justify-content:center;}
+.upload-icon-sm svg{width:18px; height:18px; stroke:var(--accent); fill:none; stroke-width:2;}
 
-.history-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
-.hist-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;cursor:pointer;position:relative;transition: 0.2s;}
-.hist-card:hover{border-color:var(--accent-mid);box-shadow:0 8px 20px rgba(255,68,26,0.1);transform:translateY(-2px);}
-.hist-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px;}
-/* LAS CANEQUITAS */
-.hist-card-del{width:28px;height:28px;border-radius:8px;border:none;background:transparent;color:var(--text-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.15s;flex-shrink:0;}
-.hist-card-del:hover{background:var(--danger-light);color:var(--danger);}
+.btn-export{background:var(--accent); color:white; border:none; padding:0 24px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; font-size:13px; transition:0.2s; display:flex; align-items:center; gap:8px;}
+.btn-export:hover{background:var(--text); transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.1);}
 
-.hist-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;margin:16px 0;background:var(--surface2);border-radius:var(--radius-sm);overflow:hidden;}
-.hist-metric{padding:10px 8px;text-align:center;border-right:1px solid var(--border);}
+.history-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;}
+.hist-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; cursor:pointer; position:relative; transition:0.2s;}
+.hist-card:hover{border-color:var(--accent-mid); box-shadow:0 8px 20px rgba(255,68,26,0.1); transform:translateY(-2px);}
+.hist-card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:14px;}
+.hist-card-del{width:28px; height:28px; border-radius:8px; border:none; background:transparent; color:var(--text-soft); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.15s;}
+.hist-card-del:hover{background:var(--danger-light); color:var(--danger);}
+
+.hist-metrics{display:grid; grid-template-columns:1fr 1fr 1fr; margin:16px 0; background:var(--surface2); border-radius:var(--radius-sm); overflow:hidden;}
+.hist-metric{padding:12px 8px; text-align:center; border-right:1px solid var(--border);}
 .hist-metric:last-child{border-right:none;}
-.hist-metric-val{font-size:22px;font-weight:700;}
-.hist-metric-lbl{font-size:11px;color:var(--text-soft);margin-top:4px;}
+.hist-metric-val{font-size:22px; font-weight:700;}
+.hist-metric-lbl{font-size:11px; color:var(--text-soft); margin-top:4px;}
 
 .c-green { color: var(--success) !important; }
 .c-orange { color: var(--warn) !important; }
 .c-red { color: var(--danger) !important; }
 
-/* DETALLE BONITO */
-.detail-header{display:flex;align-items:center;gap:15px;padding:1.5rem 0 1rem;}
-.btn-back{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.btn-back:hover{background:var(--accent);border-color:var(--accent);}
+.detail-header{display:flex; align-items:center; gap:15px; padding:1.5rem 0 1rem;}
+.btn-back{width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--surface); cursor:pointer; display:flex; align-items:center; justify-content:center;}
+.btn-back:hover{background:var(--accent); border-color:var(--accent);}
 .btn-back:hover svg{stroke:white;}
-.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:1.5rem;}
-.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.25rem;}
-.metric-label{font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:8px;}
-.metric-value{font-size:32px;font-weight:700;}
-.section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;}
-.section-title{font-size:16px;font-weight:600;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;}
-.section-title svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:2;}
-.team-card{border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.25rem;position:relative; margin-bottom:10px;}
-.team-card.winner{border-color:var(--accent-mid);background:var(--accent-light);}
-.winner-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;padding:2px 10px;background:var(--accent);color:white;border-radius:20px;}
-.question-item{border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:12px;}
-.question-header{display:flex;justify-content:space-between;gap:15px;margin-bottom:10px;}
-.question-text{font-size:14px;font-weight:500;line-height:1.5;flex:1;}
-.q-bar-wrap{background:var(--border);border-radius:6px;height:6px;}
-.q-bar{height:6px;border-radius:6px;}
+
+.metrics-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; margin-bottom:1.5rem;}
+.metric-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:1.25rem;}
+.metric-label{font-size:12px; color:var(--text-muted); font-weight:600; text-transform:uppercase; margin-bottom:8px;}
+.metric-value{font-size:32px; font-weight:700;}
+
+.section{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem;}
+.section-title{font-size:16px; font-weight:600; margin-bottom:1.25rem; display:flex; align-items:center; gap:10px;}
+.section-title svg{width:18px; height:18px; stroke:var(--accent); fill:none; stroke-width:2;}
+.team-card{border:1px solid var(--border); border-radius:var(--radius-sm); padding:1.25rem; position:relative; margin-bottom:10px;}
+.team-card.winner{border-color:var(--accent-mid); background:var(--accent-light);}
+.winner-badge{position:absolute; top:12px; right:12px; font-size:10px; font-weight:700; padding:2px 10px; background:var(--accent); color:white; border-radius:20px;}
+
+.question-item{border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 18px; margin-bottom:12px;}
+.question-header{display:flex; justify-content:space-between; gap:15px; margin-bottom:10px;}
+.question-text{font-size:14px; font-weight:500; line-height:1.5; flex:1;}
+.q-bar-wrap{background:var(--border); border-radius:6px; height:6px;}
+.q-bar{height:6px; border-radius:6px;}
 </style>
 </head>
 <body>
@@ -97,13 +100,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 <div class="layout">
   <div id="tab-training" class="tab-content active">
-    <div class="upload-wrap">
+    <div class="upload-row">
       <div class="upload-compact" onclick="document.getElementById('file-in').click()">
         <div class="upload-icon-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-        <div class="upload-compact-text"><p style="font-weight:600">Subir Reporte</p></div>
+        <div class="upload-compact-text"><p style="font-weight:600">Subir Reporte Excel</p></div>
         <input type="file" id="file-in" style="display:none" onchange="handleFile(event)">
       </div>
-      <button class="btn-export" onclick="exportData()">⬇ Descargar Base de Datos</button>
+      <button class="btn-export" onclick="exportData()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar Base de Datos
+      </button>
     </div>
     <div id="training-container" class="history-grid"></div>
   </div>
@@ -120,6 +126,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <script>
 let history = [];
 
+// Carga datos desde GitHub
 async function loadExternalData() {
   try {
     const response = await fetch('data.json');
@@ -227,7 +234,7 @@ function renderList() {
   document.getElementById('training-count').innerText = history.length;
   const cont = document.getElementById('training-container');
   if (history.length === 0) {
-    cont.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-soft);">No hay reportes cargados.</div>`;
+    cont.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-soft);">No hay reportes.</div>`;
     return;
   }
   cont.innerHTML = history.map(h => `
