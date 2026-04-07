@@ -20,7 +20,8 @@
 }
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
 .hero{background:linear-gradient(135deg,#FF441A 0%,#FF6B40 60%,#FF8C60 100%);padding:3.5rem 2rem;text-align:center;position:relative;overflow:hidden;}
-.hero-title{font-size:32px;font-weight:700;color:white;letter-spacing:-0.5px;margin-bottom:8px;}
+/* Título con cursor normal para que nadie sospeche */
+.hero-title{font-size:32px;font-weight:700;color:white;letter-spacing:-0.5px;margin-bottom:8px;cursor:default;user-select:none;}
 .hero-sub{font-size:14px;color:rgba(255,255,255,0.85);font-weight:400;}
 
 .tabs-wrap{background:var(--surface);border-bottom:1px solid var(--border);}
@@ -33,22 +34,29 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 
-/* AJUSTE AREA DE SUBIDA Y BOTON */
 .upload-row{display:flex; gap:12px; margin: 1.25rem 0 1rem; align-items: stretch;}
 .upload-compact{flex:1; border:1.5px dashed var(--border); border-radius:var(--radius-sm); padding:16px 20px; display:flex; align-items:center; gap:14px; cursor:pointer; background:var(--surface); transition:0.2s;}
 .upload-compact:hover{border-color:var(--accent-mid); background:var(--accent-light);}
 .upload-icon-sm{width:40px; height:40px; background:var(--accent-light); border-radius:10px; display:flex; align-items:center; justify-content:center;}
 .upload-icon-sm svg{width:18px; height:18px; stroke:var(--accent); fill:none; stroke-width:2;}
 
-.btn-export{background:var(--accent); color:white; border:none; padding:0 24px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; font-size:13px; transition:0.2s; display:flex; align-items:center; gap:8px;}
-.btn-export:hover{background:var(--text); transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+/* EL BOTÓN AHORA ESTÁ OCULTO POR DEFECTO */
+#admin-btn-wrap { display: none; }
+.btn-export{background:var(--text); color:white; border:none; padding:0 24px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; font-size:13px; transition:0.2s; display:flex; align-items:center; gap:8px;}
+.btn-export:hover{background:var(--accent); transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.1);}
 
 .history-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;}
 .hist-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; cursor:pointer; position:relative; transition:0.2s;}
 .hist-card:hover{border-color:var(--accent-mid); box-shadow:0 8px 20px rgba(255,68,26,0.1); transform:translateY(-2px);}
 .hist-card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:14px;}
-.hist-card-del{width:28px; height:28px; border-radius:8px; border:none; background:transparent; color:var(--text-soft); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.15s;}
+
+/* CANEQUITAS OCULTAS POR DEFECTO */
+.hist-card-del{display:none; width:28px; height:28px; border-radius:8px; border:none; background:transparent; color:var(--text-soft); cursor:pointer; align-items:center; justify-content:center; transition:0.15s;}
 .hist-card-del:hover{background:var(--danger-light); color:var(--danger);}
+
+/* CUANDO EL MODO ADMIN ESTÁ ACTIVO, SE MUESTRAN */
+body.admin-mode #admin-btn-wrap { display: flex; }
+body.admin-mode .hist-card-del { display: flex; }
 
 .hist-metrics{display:grid; grid-template-columns:1fr 1fr 1fr; margin:16px 0; background:var(--surface2); border-radius:var(--radius-sm); overflow:hidden;}
 .hist-metric{padding:12px 8px; text-align:center; border-right:1px solid var(--border);}
@@ -87,7 +95,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <body>
 
 <div class="hero">
-  <div class="hero-title">Rappi Training Insights</div>
+  <div class="hero-title" ondblclick="toggleAdmin()">Rappi Training Insights</div>
   <div class="hero-sub">Capacitaciones & Métricas — Soporte & Procesos</div>
 </div>
 
@@ -106,10 +114,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
         <div class="upload-compact-text"><p style="font-weight:600">Subir Reporte Excel</p></div>
         <input type="file" id="file-in" style="display:none" onchange="handleFile(event)">
       </div>
-      <button class="btn-export" onclick="exportData()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Descargar Base de Datos
-      </button>
+      <div id="admin-btn-wrap">
+          <button class="btn-export" onclick="exportData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar JSON
+          </button>
+      </div>
     </div>
     <div id="training-container" class="history-grid"></div>
   </div>
@@ -126,7 +136,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 <script>
 let history = [];
 
-// Carga datos desde GitHub
+// ACTIVA/DESACTIVA MODO ADMIN
+function toggleAdmin() {
+    document.body.classList.toggle('admin-mode');
+    if(document.body.classList.contains('admin-mode')) {
+        console.log("Modo Admin Activo");
+    }
+}
+
 async function loadExternalData() {
   try {
     const response = await fetch('data.json');
@@ -134,7 +151,7 @@ async function loadExternalData() {
       history = await response.json();
       renderList();
     }
-  } catch (e) { console.log("Sin base de datos externa."); }
+  } catch (e) { console.log("Sin base de datos."); }
 }
 
 function switchTab(t) {
