@@ -172,3 +172,248 @@
     </div>
 
     <div class="tabs-container">
+        <button class="tab-button active" onclick="switchTab('agendamientos')">📅 Agendamientos</button>
+        <button class="tab-button" onclick="switchTab('metricas')">📊 Métricas e Insights</button>
+    </div>
+
+    <div id="agendamientos" class="tab-content active">
+        <div class="security-warning">
+            ⚠️ <strong>Acceso Exclusivo @rappi.com:</strong> Estas sesiones y enlaces son estrictamente para uso interno. El ingreso a las salas virtuales está configurado para <strong>admitir únicamente correos corporativos de Rappi</strong>. Intentos de acceso con cuentas personales serán rechazados por el sistema de forma automática.
+        </div>
+
+        <div class="agenda-section">
+            <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Resumen de la Agenda Semanal</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 25px;">Accede directamente a los enlaces rápidos sin navegar en el calendario.</p>
+            
+            <div class="agenda-grid">
+                <div class="agenda-card card-re-training">
+                    <h3>🚀 Re-trainings</h3>
+                    <div class="agenda-item">
+                        <span class="session-title">1. Re-training Juan Onboarding</span>
+                        <span class="session-time">⏰ Lunes — 11:00 AM (Hora CO)</span>
+                        <span class="session-note">💡 Si el lunes es festivo, la sesión pasa automáticamente al martes a las 11:00 AM.</span>
+                        <a href="https://meet.google.com/ppp-nccs-erc" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
+                    </div>
+                    <div class="agenda-item">
+                        <span class="session-title">2. Re-training Cambios Contractuales</span>
+                        <span class="session-time">⏰ Miércoles — 11:00 AM (Hora CO)</span>
+                        <a href="https://meet.google.com/uwd-vwnf-gfm" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
+                    </div>
+                    <div class="agenda-item">
+                        <span class="session-title">3. Re-training Expansiones Manager</span>
+                        <span class="session-time">⏰ Jueves — 11:00 AM (Hora CO)</span>
+                        <a href="https://meet.google.com/uwd-vwnf-gfm" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
+                    </div>
+                </div>
+
+                <div class="agenda-card card-dudas">
+                    <h3>❓ Sesiones de Dudas</h3>
+                    <div class="agenda-item">
+                        <span class="session-title">1. Dudas Cambios Contractuales</span>
+                        <span class="session-time">⏰ Lunes a Viernes — 12:00 PM (Hora CO)</span>
+                        <a href="https://meet.google.com/bot-wkij-zag" target="_blank" class="meet-inline-btn">🔵 Entrar a Sala</a>
+                    </div>
+                    <div class="agenda-item">
+                        <span class="session-title">2. Dudas HubSpot & Expansiones Manager</span>
+                        <span class="session-time">⏰ Lunes a Viernes — 3:00 PM (Hora CO)</span>
+                        <a href="https://meet.google.com/ejk-btuo-ecu" target="_blank" class="meet-inline-btn">🔵 Entrar a Sala</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #eef0f2; margin: 40px auto; max-width: 1000px;">
+
+        <div class="calendar-container">
+            <h2 class="calendar-title">Cronograma y Sesiones Futuras</h2>
+            <p class="calendar-subtitle">¡Tu crecimiento no se detiene! Revisa aquí el calendario completo para planificar tu semana, asegurar tu lugar y seguir desarrollando tus habilidades al siguiente nivel.</p>
+            <div class="responsive-iframe-container">
+                <iframe src="https://calendar.google.com/calendar/embed?src=c_e298c2c3ba6b0fce6a179e56dcced4b1f15a3e0ef4a24f80619b265a2ef513f1%40group.calendar.google.com&ctz=America%2FBogota&wkst=2&bgcolor=%23ffffff&showTitle=0&showNav=1&showDate=1&showPrint=0&showTabs=1&showCalendars=0&showTz=1" frameborder="0" scrolling="no"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="metricas" class="tab-content" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Analizador de Capacitaciones</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Sube tus reportes de Excel para interpretar los datos e insights automáticamente.</p>
+        
+        <div class="upload-zone" onclick="document.getElementById('excel-file-input').click()">
+            <span style="font-size: 1.8rem; display: block; margin-bottom: 8px;">📤</span>
+            <strong style="color: #333; font-size: 1.2rem;">Subir Reporte Excel</strong>
+            <p style="color: #666; font-size: 0.95rem; margin: 6px 0 0 0;">Haz clic aquí o arrastra tus archivos para procesar múltiples reportes en simultáneo.</p>
+            
+            <input type="file" id="excel-file-input" accept=".xlsx, .xls" multiple style="display: none;" onchange="handleFileUpload(event)">
+        </div>
+
+        <div id="detail-body" class="metrics-grid"></div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(window.event && window.event.currentTarget) { window.event.currentTarget.classList.add('active'); }
+        }
+
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            // Se eliminó la línea que limpiaba el contenedor para permitir acumular múltiples cargas de archivos sucesivas
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                        if (jsonData.length > 0) {
+                            calcularYMostrarMetricas(file.name, jsonData);
+                        } else {
+                            mostrarErrorCard(file.name, "El archivo está vacío o la pestaña principal no tiene datos.");
+                        }
+                    } catch (error) {
+                        mostrarErrorCard(file.name, "No se pudo leer el formato del Excel.");
+                    }
+                };
+
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function calcularYMostrarMetricas(fileName, rows) {
+            const container = document.getElementById('detail-body');
+            
+            let totalNotas = 0;
+            let aprobados = 0;
+            let conteoAgentes = 0;
+
+            let conteoPreguntas = {};
+            let aciertosPreguntas = {};
+
+            rows.forEach(row => {
+                // 🎯 BUSCADOR INTELIGENTE DE LA COLUMNA DE PUNTUACIÓN DE RAPPI
+                const llavePuntuacion = Object.keys(row).find(k => k.toLowerCase().includes('puntuaci') || k.toLowerCase().includes('score') || k.toLowerCase().includes('nota'));
+                
+                if (llavePuntuacion && row[llavePuntuacion] !== undefined) {
+                    let valorRaw = String(row[llavePuntuacion]).trim(); // Ej: "90 / 100" o "90/100"
+                    let notaLimpia = 0;
+
+                    // Si viene en formato "90 / 100", separamos el número de la izquierda
+                    if (valorRaw.includes('/')) {
+                        notaLimpia = parseFloat(valorRaw.split('/')[0].trim());
+                    } else {
+                        notaLimpia = parseFloat(valorRaw);
+                    }
+
+                    if (!isNaN(notaLimpia)) {
+                        totalNotas += notaLimpia;
+                        conteoAgentes++;
+
+                        // En Rappi se aprueba con 70 puntos sobre 100
+                        if (notaLimpia >= 70) {
+                            aprobados++;
+                        }
+                    }
+                }
+
+                // 📊 ANALIZADOR DINÁMICO DE RESPUESTAS POR PREGUNTA
+                Object.keys(row).forEach(key => {
+                    if (key.includes('?') || key.toLowerCase().includes('pregunta') || key.length > 25) {
+                        if (key.toLowerCase().includes('correo') || key.toLowerCase().includes('nombre') || key.toLowerCase().includes('puntuaci') || key.toLowerCase().includes('marca de tiempo')) {
+                            return;
+                        }
+
+                        if (!conteoPreguntas[key]) {
+                            conteoPreguntas[key] = 0;
+                            aciertosPreguntas[key] = 0;
+                        }
+                        conteoPreguntas[key]++;
+                        
+                        const resp = String(row[key]).toLowerCase().trim();
+                        if (resp !== "" && !resp.includes("incorrecto") && resp !== "0" && !resp.startsWith("no ")) {
+                            aciertosPreguntas[key]++;
+                        }
+                    }
+                });
+            });
+
+            if (conteoAgentes === 0) { conteoAgentes = rows.length; }
+
+            const promedioGeneral = conteoAgentes > 0 ? Math.round(totalNotas / conteoAgentes) : 0;
+            const porcentajeAprobacion = conteoAgentes > 0 ? Math.round((aprobados / conteoAgentes) * 100) : 0;
+
+            let rankingPreguntas = [];
+            Object.keys(conteoPreguntas).forEach(q => {
+                let pct = conteoPreguntas[q] > 0 ? Math.round((aciertosPreguntas[q] / conteoPreguntas[q]) * 100) : 0;
+                rankingPreguntas.push({ pregunta: q, porcentaje: pct });
+            });
+
+            rankingPreguntas.sort((a, b) => a.porcentaje - b.porcentaje);
+
+            const desaprobadas = rankingPreguntas.filter(p => p.porcentaje < 60).slice(0, 2); 
+            const aprobadasTop = rankingPreguntas.filter(p => p.porcentaje >= 60).slice(-2).reverse();
+
+            let afectacionHTML = desaprobadas.map(p => `<li>⚠️ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
+            let éxitosHTML = aprobadasTop.map(p => `<li>✅ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
+
+            if (!afectacionHTML) { afectacionHTML = '<li>🎉 ¡Excelente operacional! Ninguna pregunta crítica con rendimiento bajo.</li>'; }
+            if (!éxitosHTML) { éxitosHTML = '<li>📋 No se consolidaron puntos fuertes destacados en esta muestra.</li>'; }
+
+            // PINTAR LA TARJETA COMPLETA CON INSIGHTS REALES DE RAPPI
+            const cardHTML = `
+                <div class="metric-card" style="margin-bottom: 25px;">
+                    <h4 style="margin-top:0; color:#333; font-size:1.2rem; border-bottom:1px solid #f5f5f5; padding-bottom: 10px;">
+                        📋 ${(fileName || "Reporte").replace(/\.[^/.]+$/, "")}
+                    </h4>
+                    
+                    <div style="display: flex; justify-content: space-around; background: #fafafa; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+                        <div>
+                            <strong style="font-size: 1.6rem; color: #2e7d32;">${promedioGeneral}%</strong>
+                            <br><small style="color:#777; font-weight: 600;">Promedio</small>
+                        </div>
+                        <div>
+                            <strong style="font-size: 1.6rem; color: #1565c0;">${porcentajeAprobacion}%</strong>
+                            <br><small style="color:#777; font-weight: 600;">Aprobación</small>
+                        </div>
+                        <div>
+                            <strong style="font-size: 1.6rem; color: #e65100;">${conteoAgentes}</strong>
+                            <br><small style="color:#777; font-weight: 600;">Agentes</small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: left; font-size: 0.9rem; line-height: 1.4;">
+                        <h5 style="margin: 0 0 8px 0; color: #c62828; font-size: 0.95rem;">🚨 Preguntas con Mayor Afectación (Oportunidades de mejora)</h5>
+                        <ul style="margin: 0 0 15px 0; padding-left: 20px; color: #555;">
+                            ${afectacionHTML}
+                        </ul>
+
+                        <h5 style="margin: 0 0 8px 0; color: #2e7d32; font-size: 0.95rem;">🌟 Puntos Fuertes (Mayor entendimiento)</h5>
+                        <ul style="margin: 0; padding-left: 20px; color: #555;">
+                            ${éxitosHTML}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML += cardHTML;
+        }
+
+        function mostrarErrorCard(fileName, mensaje) {
+            const container = document.getElementById('detail-body');
+            container.innerHTML += `
+                <div class="metric-card" style="border-color: #ffcdd2; background: #fff9f9;">
+                    <h4 style="margin-top:0; color:#c62828; font-size:1.1rem;">❌ ${fileName}</h4>
+                    <p style="color:#555; font-size:0.9rem; margin:10px 0 0 0;">${mensaje}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
