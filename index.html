@@ -267,19 +267,18 @@
 
     </div>
 
-    <div id="metricas" class="tab-content">
-        <div id="lock-screen-container" class="lock-screen">
-            <h3>🔒 Acceso Restringido</h3>
-            <p>Introduce el código de acceso para ver los resultados de las capacitaciones.</p>
-            <input type="password" id="access-code" placeholder="Código secreto">
-            <br>
-            <button onclick="checkAccessCode()">Ver Métricas</button>
-            <div id="error-message" class="error-msg">Código incorrecto. Inténtalo de nuevo.</div>
-        </div>
+    <div id="metricas" class="tab-content" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Métricas e Insights de Capacitaciones</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Resultados acumulados de la operación y asistencia general.</p>
+        
+        <div id="detail-body"></div>
+    </div>
 
-        <div id="protected-metrics-content">
-            <div id="detail-body"></div>
-        </div>
+   <div id="metricas" class="tab-content" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Métricas e Insights de Capacitaciones</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Resultados acumulados de la operación y asistencia general.</p>
+        
+        <div id="detail-body"></div>
     </div>
 
     <script>
@@ -287,22 +286,43 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        function checkAccessCode() {
-            const codeEntered = document.getElementById('access-code').value;
-            const correctCode = "Rappi2026"; 
-
-            if (codeEntered === correctCode) {
-                document.getElementById('lock-screen-container').style.display = 'none';
-                document.getElementById('protected-metrics-content').style.display = 'block';
-                if (typeof loadExternalData === "function") { loadExternalData(); }
-            } else {
-                document.getElementById('error-message').style.display = 'block';
+            if(event && event.currentTarget) { event.currentTarget.classList.add('active'); }
+            
+            // Si el usuario entra a la pestaña de métricas, cargamos los datos de inmediato
+            if (tabId === 'metricas') {
+                loadExternalData();
             }
         }
-    </script>
 
+        // Función que lee tu data.json y dibuja las tarjetas al instante
+        function loadExternalData() {
+            fetch('data.json')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('detail-body');
+                    if (!container) return;
+                    
+                    let htmlContent = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">`;
+                    
+                    data.forEach(item => {
+                        htmlContent += `
+                            <div style="background: white; border: 1px solid #eef0f2; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); font-family: sans-serif;">
+                                <h4 style="margin-top:0; color:#333; font-size:1.1rem;">📊 ${item.name || 'Reporte de Capacitación'}</h4>
+                                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                                    <div><strong style="font-size: 1.4rem; color: #2e7d32;">${item.promedio || '0'}%</strong><br><small style="color:#777;">Promedio</small></div>
+                                    <div><strong style="font-size: 1.4rem; color: #1565c0;">${item.aprobacion || '0'}%</strong><br><small style="color:#777;">Aprobación</small></div>
+                                    <div><strong style="font-size: 1.4rem; color: #e65100;">${item.agentes || '0'}</strong><br><small style="color:#777;">Agentes</small></div>
+                                </div>
+                            </div>`;
+                    });
+                    
+                    htmlContent += `</div>`;
+                    container.innerHTML = htmlContent;
+                })
+                .catch(err => {
+                    document.getElementById('detail-body').innerHTML = `<p style="color:red; text-align:center;">Error al cargar las métricas. Verifica que tu archivo data.json tenga datos válidos.</p>`;
+                });
+        }
+    </script>
 </body>
 </html>
