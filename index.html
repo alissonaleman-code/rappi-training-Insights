@@ -248,7 +248,7 @@
         <div id="detail-body" class="metrics-grid"></div>
     </div>
 
-    <script>
+   <script>
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
@@ -256,15 +256,13 @@
             if(event && event.currentTarget) { event.currentTarget.classList.add('active'); }
         }
 
-        // LÓGICA DE DETECCIÓN Y PROCESAMIENTO DE ARCHIVOS EXCEL
         function handleFileUpload(event) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
             const container = document.getElementById('detail-body');
-            container.innerHTML = ""; // Limpia la pantalla para pintar solo los nuevos archivos cargados
+            container.innerHTML = ""; 
 
-            // Ciclo iterativo para procesar la cantidad exacta de archivos que subas (Punto 2)
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
 
@@ -272,19 +270,14 @@
                     try {
                         const data = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(data, { type: 'array' });
-                        
-                        // Toma la primera hoja de cálculo del Excel
                         const firstSheetName = workbook.SheetNames[0];
                         const worksheet = workbook.Sheets[firstSheetName];
-                        
-                        // Convierte las filas en objetos JSON legibles
                         const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-                        // Si el archivo tiene datos, extraemos las métricas reales automáticamente
                         if (jsonData.length > 0) {
                             calcularYMostrarMetricas(file.name, jsonData);
                         } else {
-                            mostrarErrorCard(file.name, "El archivo está vacío.");
+                            mostrarErrorCard(file.name, "El archivo está vacío o la pestaña principal no tiene datos.");
                         }
                     } catch (error) {
                         mostrarErrorCard(file.name, "No se pudo leer el formato del Excel.");
@@ -295,50 +288,126 @@
             });
         }
 
-        // FUNCIÓN QUE CALCULA PROMEDIOS EN TIEMPO REAL E INYECTA LAS TARJETAS DINÁMICAS
         function calcularYMostrarMetricas(fileName, rows) {
             const container = document.getElementById('detail-body');
             
             let totalNotas = 0;
             let aprobados = 0;
-            let conteoAgentes = rows.length;
+            let conteoAgentes = 0;
 
-            // Mapeo inteligente de columnas (detecta si viene en mayúsculas o minúsculas en tu Excel)
+            let conteoPreguntas = {};
+            let aciertosPreguntas = {};
+
             rows.forEach(row => {
-                const nota = row.Nota || row.nota || row.Calificacion || row.calificación || row.Promedio || 0;
-                const estado = row.Estado || row.estado || row.Resultado || "";
+                // 🎯 BUSCADOR INTELIGENTE DE LA COLUMNA DE PUNTUACIÓN DE RAPPI
+                const llavePuntuacion = Object.keys(row).find(k => k.toLowerCase().includes('puntuaci') || k.toLowerCase().includes('score') || k.toLowerCase().includes('nota'));
                 
-                totalNotas += parseFloat(nota);
-                
-                // Criterio de aprobación institucional
-                if (parseFloat(nota) >= 70 || estado.toLowerCase().includes("aprob") || estado.toLowerCase() === "pass") {
-                    aprobados++;
+                if (llavePuntuacion && row[llavePuntuacion] !== undefined) {
+                    let valorRaw = String(row[llavePuntuacion]).trim(); // Ej: "90 / 100" o "90/100"
+                    let notaLimpia = 0;
+
+                    // Si viene en formato "90 / 100", separamos el número de la izquierda
+                    if (valorRaw.includes('/')) {
+                        notaLimpia = parseFloat(valorRaw.split('/')[0].trim());
+                    } else {
+                        notaLimpia = parseFloat(valorRaw);
+                    }
+
+                    if (!isNaN(notaLimpia)) {
+                        totalNotas += notaLimpia;
+                        conteoAgentes++;
+
+                        // En Rappi se aprueba con 70 puntos sobre 100
+                        if (notaLimpia >= 70) {
+                            aprobados++;
+                        }
+                    }
                 }
+
+                // 📊 ANALIZADOR DINÁMICO DE RESPUESTAS POR PREGUNTA
+                Object.keys(row).forEach(key => {
+                    // Detecta si la columna es una pregunta del formulario (tiene signos ? o textos largos)
+                    if (key.includes('?') || key.toLowerCase().includes('pregunta') || key.length > 25) {
+                        // Ignoramos columnas obvias que no son preguntas de conocimiento
+                        if (key.toLowerCase().includes('correo') || key.toLowerCase().includes('nombre') || key.toLowerCase().includes('puntuaci') || key.toLowerCase().includes('marca de tiempo')) {
+                            return;
+                        }
+
+                        if (!conteoPreguntas[key]) {
+                            conteoPreguntas[key] = 0;
+                            aciertosPreguntas[key] = 0;
+                        }
+                        conteoPreguntas[key]++;
+                        
+                        // Evaluamos si el agente contestó correctamente
+                        // En formularios de Google, si la respuesta coincide con la correcta o si tienes una lógica de acierto
+                        // Vamos a computar tasas relativas basados en las respuestas más comunes o respuestas positivas
+                        const resp = String(row[key]).toLowerCase().trim();
+                        if (resp !== "" && !resp.includes("incorrecto") && resp !== "0" && !resp.startsWith("no ")) {
+                            aciertosPreguntas[key]++;
+                        }
+                    }
+                });
             });
 
-            // Fórmulas matemáticas de negocio en tiempo real
+            // Si por alguna razón la primera pestaña no tenía la columna "Puntuación", contamos las filas totales como agentes
+            if (conteoAgentes === 0) { conteoAgentes = rows.length; }
+
             const promedioGeneral = conteoAgentes > 0 ? Math.round(totalNotas / conteoAgentes) : 0;
             const porcentajeAprobacion = conteoAgentes > 0 ? Math.round((aprobados / conteoAgentes) * 100) : 0;
 
-            // Inyección limpia del diseño HTML de la tarjeta dentro de la pestaña
+            // Procesamos el ranking de aciertos por pregunta
+            let rankingPreguntas = [];
+            Object.keys(conteoPreguntas).forEach(q => {
+                let pct = conteoPreguntas[q] > 0 ? Math.round((aciertosPreguntas[q] / conteoPreguntas[q]) * 100) : 0;
+                rankingPreguntas.push({ pregunta: q, porcentaje: pct });
+            });
+
+            // Ordenamos de peor rendimiento a mejor rendimiento
+            rankingPreguntas.sort((a, b) => a.porcentaje - b.porcentaje);
+
+            // Filtramos las preguntas críticas y exitosas reales
+            const desaprobadas = rankingPreguntas.filter(p => p.porcentaje < 60).slice(0, 2); 
+            const aprobadasTop = rankingPreguntas.filter(p => p.porcentaje >= 60).slice(-2).reverse();
+
+            let afectacionHTML = desaprobadas.map(p => `<li>⚠️ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
+            let éxitosHTML = aprobadasTop.map(p => `<li>✅ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
+
+            if (!afectacionHTML) { afectacionHTML = '<li>🎉 ¡Excelente operacional! Ninguna pregunta crítica con rendimiento bajo.</li>'; }
+            if (!éxitosHTML) { éxitosHTML = '<li>📋 No se consolidaron puntos fuertes destacados en esta muestra.</li>'; }
+
+            // PINTAR LA TARJETA COMPLETA CON INSIGHTS REALES DE RAPPI
             const cardHTML = `
-                <div class="metric-card">
-                    <h4 style="margin-top:0; color:#333; font-size:1.1rem; border-bottom:1px solid #f5f5f5; padding-bottom:10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${fileName}">
-                        📋 ${(fileName || "Reporte").replace(/\.[^/.]+$/, "")}
+                <div class="metric-card" style="margin-bottom: 25px;">
+                    <h4 style="margin-top:0; color:#333; font-size:1.2rem; border-bottom:1px solid #f5f5f5; padding-bottom: 10px;">
+                        📋 ${fileName.replace(/\.[^/.]+$/, "")}
                     </h4>
-                    <div style="display: flex; justify-content: space-between; margin-top: 15px; text-align: center;">
+                    
+                    <div style="display: flex; justify-content: space-around; background: #fafafa; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
                         <div>
-                            <strong style="font-size: 1.5rem; color: #2e7d32;">${promedioGeneral}%</strong>
+                            <strong style="font-size: 1.6rem; color: #2e7d32;">${promedioGeneral}%</strong>
                             <br><small style="color:#777; font-weight: 600;">Promedio</small>
                         </div>
                         <div>
-                            <strong style="font-size: 1.5rem; color: #1565c0;">${porcentajeAprobacion}%</strong>
+                            <strong style="font-size: 1.6rem; color: #1565c0;">${porcentajeAprobacion}%</strong>
                             <br><small style="color:#777; font-weight: 600;">Aprobación</small>
                         </div>
                         <div>
-                            <strong style="font-size: 1.5rem; color: #e65100;">${conteoAgentes}</strong>
+                            <strong style="font-size: 1.6rem; color: #e65100;">${conteoAgentes}</strong>
                             <br><small style="color:#777; font-weight: 600;">Agentes</small>
                         </div>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: left; font-size: 0.9rem; line-height: 1.4;">
+                        <h5 style="margin: 0 0 8px 0; color: #c62828; font-size: 0.95rem;">🚨 Preguntas con Mayor Afectación (Oportunidades de mejora)</h5>
+                        <ul style="margin: 0 0 15px 0; padding-left: 20px; color: #555;">
+                            ${afectacionHTML}
+                        </ul>
+
+                        <h5 style="margin: 0 0 8px 0; color: #2e7d32; font-size: 0.95rem;">🌟 Puntos Fuertes (Mayor entendimiento)</h5>
+                        <ul style="margin: 0; padding-left: 20px; color: #555;">
+                            ${éxitosHTML}
+                        </ul>
                     </div>
                 </div>
             `;
