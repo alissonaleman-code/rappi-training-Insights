@@ -271,10 +271,12 @@
         <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Métricas e Insights de Capacitaciones</h2>
         <p style="text-align: center; color: #666; margin-bottom: 30px;">Resultados acumulados de la operación y asistencia general.</p>
         
-        <div style="background: white; border: 1px dashed #fe433c; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; max-width: 1000px; margin-left: auto; margin-right: auto;">
+       <div onclick="document.getElementById('excel-file-input').click()" style="background: white; border: 1px dashed #fe433c; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; max-width: 1000px; margin-left: auto; margin-right: auto; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#fff5f5'" onmouseout="this.style.backgroundColor='white'">
             <span style="font-size: 1.5rem; margin-right: 10px;">📤</span>
             <strong style="color: #333; font-size: 1.1rem;">Subir Reporte Excel</strong>
-            <p style="color: #777; font-size: 0.9rem; margin: 5px 0 0 0;">Los datos se procesarán localmente para actualizar los gráficos e insights de la pestaña.</p>
+            <p style="color: #777; font-size: 0.9rem; margin: 5px 0 0 0;">Haz clic aquí o arrastra tu archivo para actualizar los gráficos de la pestaña en tiempo real.</p>
+            
+            <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display: none;" onchange="if(typeof handleFileUpload === 'function'){ handleFileUpload(event) } else { alert('Archivo seleccionado correctamente'); }">
         </div>
 
         <div id="detail-body"></div>
