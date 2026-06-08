@@ -275,15 +275,12 @@
         let esAdmin = false;
         const CLAVE_CORRECTA = "rappi2026"; 
 
-        // 📥 AL CARGAR LA PÁGINA: Recuperar tarjetas guardadas Y recordar si ya habías iniciado sesión antes
         document.addEventListener("DOMContentLoaded", () => {
-            // 1. Recuperar el tablero visual
             const guardadas = localStorage.getItem("rappi_metrics_cards");
             if (guardadas) {
                 document.getElementById('detail-body').innerHTML = guardadas;
             }
 
-            // 2. Comprobar si el navegador recuerda que tú eres el Editor activo
             const modoEditorGuardado = localStorage.getItem("rappi_admin_session");
             if (modoEditorGuardado === "activo") {
                 activarVisualesDeEditor();
@@ -304,13 +301,11 @@
             document.getElementById('admin-login-btn').innerText = "🔓 Editor Activo";
             document.getElementById('admin-login-btn').style.background = "#2e7d32";
             
-            // Forzar que aparezcan TODOS los botones de eliminar guardados en el disco
             document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'block');
         }
 
         function solicitarAccesoAdmin() {
             if (esAdmin) {
-                // Si haces clic estando activa, te permite CERRAR SESIÓN con seguridad
                 if(confirm("¿Deseas salir del Modo Editor? Tu tablero guardado seguirá visible para todos.")){
                     esAdmin = false;
                     localStorage.removeItem("rappi_admin_session");
@@ -325,7 +320,7 @@
 
             let pass = prompt("Por favor ingresa la clave de Administrador para modificar reportes:");
             if (pass === CLAVE_CORRECTA) {
-                localStorage.setItem("rappi_admin_session", "activo"); // 💾 Guarda la sesión para que no te la vuelva a pedir
+                localStorage.setItem("rappi_admin_session", "activo");
                 activarVisualesDeEditor();
                 alert("¡Acceso concedido! El navegador recordará tu sesión de Editor.");
             } else if (pass !== null) {
@@ -443,85 +438,3 @@
             if (conteoAgentes === 0) { conteoAgentes = rows.length; }
 
             const promedioGeneral = conteoAgentes > 0 ? Math.round(totalNotas / conteoAgentes) : 0;
-            const porcentajeAprobacion = conteoAgentes > 0 ? Math.round((aprobados / conteoAgentes) * 100) : 0;
-
-            let rankingPreguntas = [];
-            Object.keys(conteoPreguntas).forEach(q => {
-                let pct = conteoPreguntas[q] > 0 ? Math.round((aciertosPreguntas[q] / conteoPreguntas[q]) * 100) : 0;
-                
-                if (pct > promedioGeneral) { pct = Math.round(promedioGeneral * (pct / 100)); }
-                if (promedioGeneral < 90 && pct >= 95) { pct = Math.round(promedioGeneral - (Math.random() * 8 + 2)); }
-
-                rankingPreguntas.push({ pregunta: q, porcentaje: pct });
-            });
-
-            rankingPreguntas.sort((a, b) => a.porcentaje - b.porcentaje);
-
-            const desaprobadas = rankingPreguntas.slice(0, 2); 
-            const aprobadasTop = rankingPreguntas.slice(-2).reverse();
-
-            let afectacionHTML = desaprobadas.map(p => `<li>⚠️ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
-            let éxitosHTML = aprobadasTop.map(p => `<li>✅ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
-
-            if (!afectacionHTML || promedioGeneral < 90) {
-                afectacionHTML = desaprobadas.map(p => `<li>⚠️ <strong>${p.porcentaje > 0 ? p.porcentaje : Math.round(promedioGeneral - 12)}% de acierto:</strong> ${p.pregunta}</li>`).join('');
-            }
-            if (!éxitosHTML) { éxitosHTML = '<li>📋 Resultados uniformes en la muestra analizada.</li>'; }
-
-            const displayBtn = esAdmin ? "block" : "none";
-
-            const cardHTML = `
-                <div class="metric-card" style="margin-bottom: 25px;">
-                    <button class="delete-card-btn" style="display: ${displayBtn};" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
-                    <h4 style="margin-top:0; color:#333; font-size:1.2rem; border-bottom:1px solid #f5f5f5; padding-bottom: 10px; padding-right: 80px;">
-                        📋 ${(fileName || "Reporte").replace(/\.[^/.]+$/, "")}
-                    </h4>
-                    
-                    <div style="display: flex; justify-content: space-around; background: #fafafa; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
-                        <div>
-                            <strong style="font-size: 1.6rem; color: #2e7d32;">${promedioGeneral}%</strong>
-                            <br><small style="color:#777; font-weight: 600;">Promedio</small>
-                        </div>
-                        <div>
-                            <strong style="font-size: 1.6rem; color: #1565c0;">${porcentajeAprobacion}%</strong>
-                            <br><small style="color:#777; font-weight: 600;">Aprobación</small>
-                        </div>
-                        <div>
-                            <strong style="font-size: 1.6rem; color: #e65100;">${conteoAgentes}</strong>
-                            <br><small style="color:#777; font-weight: 600;">Agentes</small>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px; text-align: left; font-size: 0.9rem; line-height: 1.4;">
-                        <h5 style="margin: 0 0 8px 0; color: #c62828; font-size: 0.95rem;">🚨 Preguntas con Mayor Afectación</h5>
-                        <ul style="margin: 0 0 15px 0; padding-left: 20px; color: #555;">
-                            ${afectacionHTML}
-                        </ul>
-
-                        <h5 style="margin: 0 0 8px 0; color: #2e7d32; font-size: 0.95rem;">🌟 Puntos Fuertes</h5>
-                        <ul style="margin: 0; padding-left: 20px; color: #555;">
-                            ${éxitosHTML}
-                        </ul>
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML += cardHTML;
-            guardarTableroEnMemoria(); 
-        }
-
-        function mostrarErrorCard(fileName, mensaje) {
-            const container = document.getElementById('detail-body');
-            const displayBtn = esAdmin ? "block" : "none";
-            container.innerHTML += `
-                <div class="metric-card" style="border-color: #ffcdd2; background: #fff9f9;">
-                    <button class="delete-card-btn" style="display: ${displayBtn};" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
-                    <h4 style="margin-top:0; color:#c62828; font-size:1.1rem; padding-right: 80px;">❌ ${fileName}</h4>
-                    <p style="color:#555; font-size:0.9rem; margin:10px 0 0 0;">${mensaje}</p>
-                </div>
-            `;
-            guardarTableroEnMemoria();
-        }
-    </script>
-</body>
-</html>
