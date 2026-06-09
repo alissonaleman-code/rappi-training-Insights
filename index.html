@@ -160,7 +160,7 @@
             animation: fadeIn 0.4s ease;
         }
 
-        /* Botón de Eliminar Análisis */
+        /* 🔒 CONTROL TOTAL POR CSS: Los botones dependen de la clase del body */
         .delete-card-btn {
             display: none; 
             position: absolute;
@@ -176,10 +176,11 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        .delete-card-btn:hover {
-            background: #c62828;
-            color: white;
-        }
+        .delete-card-btn:hover { background: #c62828; color: white; }
+
+        /* Si el cuerpo tiene el modo admin activo, muestra los botones automáticamente */
+        body.modo-admin-activo .delete-card-btn { display: block !important; }
+        body.modo-admin-activo .upload-zone { display: block !important; }
 
         @media (max-width: 768px) {
             .agenda-grid { grid-template-columns: 1fr; }
@@ -196,8 +197,8 @@
     </div>
 
     <div class="tabs-container">
-        <button class="tab-button active" onclick="switchTab(this, 'agendamientos')">📅 Agendamientos</button>
-        <button class="tab-button" onclick="switchTab(this, 'metricas')">📊 Métricas e Insights</button>
+        <button id="btn-tab-agendamientos" class="tab-button active" onclick="switchTab(this, 'agendamientos')">📅 Agendamientos</button>
+        <button id="btn-tab-metricas" class="tab-button" onclick="switchTab(this, 'metricas')">📊 Métricas e Insights</button>
     </div>
 
     <div id="agendamientos" class="tab-content active">
@@ -275,36 +276,28 @@
         let esAdmin = false;
         const CLAVE_CORRECTA = "rappi2026"; 
 
-        // 🧠 CAMBIADOR DE PESTAÑAS ULTRA SIMPLE E INFALIBLE
         function switchTab(buttonElement, tabId) {
-            // Ocultar contenidos
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            // Desactivar botones
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             
-            // Activar el contenido y el botón tocado
             const target = document.getElementById(tabId);
             if(target) target.classList.add('active');
             if(buttonElement) buttonElement.classList.add('active');
         }
 
-        // 📥 AL CARGAR LA PÁGINA
         document.addEventListener("DOMContentLoaded", () => {
-            // Cargar tarjetas guardadas
             const guardadas = localStorage.getItem("rappi_metrics_cards");
             if (guardadas) {
                 const container = document.getElementById('detail-body');
                 if (container) container.innerHTML = guardadas;
             }
 
-            // Comprobar sesión de administrador
             const modoEditorGuardado = localStorage.getItem("rappi_admin_session");
             if (modoEditorGuardado === "activo") {
                 activarVisualesDeEditor();
             } else {
                 const introText = document.getElementById('metrics-intro-text');
                 if(introText) introText.innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
-                document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'none');
             }
         });
 
@@ -317,17 +310,16 @@
 
         function activarVisualesDeEditor() {
             esAdmin = true;
-            const uploadZone = document.getElementById('main-upload-zone');
+            document.body.classList.add('modo-admin-activo'); // Activación universal por CSS
+            
             const introText = document.getElementById('metrics-intro-text');
             const loginBtn = document.getElementById('admin-login-btn');
 
-            if(uploadZone) uploadZone.style.display = 'block';
             if(introText) introText.innerText = "Sube tus reportes de Excel para interpretar los datos automáticamente. Puedes eliminar tarjetas usando el botón rojo.";
             if(loginBtn) {
                 loginBtn.innerText = "🔓 Editor Activo";
                 loginBtn.style.background = "#2e7d32";
             }
-            document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'block');
         }
 
         function solicitarAccesoAdmin() {
@@ -335,13 +327,13 @@
                 if(confirm("¿Deseas salir del Modo Editor? Tu tablero guardado seguirá visible para todos.")){
                     esAdmin = false;
                     localStorage.removeItem("rappi_admin_session");
-                    if(document.getElementById('main-upload-zone')) document.getElementById('main-upload-zone').style.display = 'none';
+                    document.body.classList.remove('modo-admin-activo'); // Desactivación universal
+                    
                     if(document.getElementById('admin-login-btn')) {
                         document.getElementById('admin-login-btn').innerText = "🔒 Modo Editor";
                         document.getElementById('admin-login-btn').style.background = "rgba(255,255,255,0.2)";
                     }
                     if(document.getElementById('metrics-intro-text')) document.getElementById('metrics-intro-text').innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
-                    document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'none');
                 }
                 return;
             }
@@ -459,20 +451,20 @@
             const promedioGeneral = conteoAgentes > 0 ? Math.round(totalNotas / conteoAgentes) : 0;
             const porcentajeAprobacion = conteoAgentes > 0 ? Math.round((aprobados / conteoAgentes) * 100) : 0;
 
-            let rankingPreguntas = [];
+            let rankingQuestions = [];
             Object.keys(conteoPreguntas).forEach(q => {
                 let pct = conteoPreguntas[q] > 0 ? Math.round((aciertosPreguntas[q] / conteoPreguntas[q]) * 100) : 0;
                 
                 if (pct > promedioGeneral) { pct = Math.round(promedioGeneral * (pct / 100)); }
                 if (promedioGeneral < 90 && pct >= 95) { pct = Math.round(promedioGeneral - (Math.random() * 8 + 2)); }
 
-                rankingPreguntas.push({ pregunta: q, porcentaje: pct });
+                rankingQuestions.push({ pregunta: q, porcentaje: pct });
             });
 
-            rankingPreguntas.sort((a, b) => a.porcentaje - b.porcentaje);
+            rankingQuestions.sort((a, b) => a.porcentaje - b.porcentaje);
 
-            const desaprobadas = rankingPreguntas.slice(0, 2); 
-            const aprobadasTop = rankingPreguntas.slice(-2).reverse();
+            const desaprobadas = rankingQuestions.slice(0, 2); 
+            const aprobadasTop = rankingQuestions.slice(-2).reverse();
 
             let afectacionHTML = desaprobadas.map(p => `<li>⚠️ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
             let éxitosHTML = aprobadasTop.map(p => `<li>✅ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
@@ -482,11 +474,9 @@
             }
             if (!éxitosHTML) { éxitosHTML = '<li>📋 Resultados uniformes en la muestra analizada.</li>'; }
 
-            const displayBtn = esAdmin ? "block" : "none";
-
             const cardHTML = `
                 <div class="metric-card" style="margin-bottom: 25px;">
-                    <button class="delete-card-btn" style="display: ${displayBtn};" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
+                    <button class="delete-card-btn" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
                     <h4 style="margin-top:0; color:#333; font-size:1.2rem; border-bottom:1px solid #f5f5f5; padding-bottom: 10px; padding-right: 80px;">
                         📋 ${(fileName || "Reporte").replace(/\.[^/.]+$/, "")}
                     </h4>
@@ -527,10 +517,9 @@
         function mostrarErrorCard(fileName, mensaje) {
             const container = document.getElementById('detail-body');
             if(!container) return;
-            const displayBtn = esAdmin ? "block" : "none";
             container.innerHTML += `
                 <div class="metric-card" style="border-color: #ffcdd2; background: #fff9f9;">
-                    <button class="delete-card-btn" style="display: ${displayBtn};" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
+                    <button class="delete-card-btn" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
                     <h4 style="margin-top:0; color:#c62828; font-size:1.1rem; padding-right: 80px;">❌ ${fileName}</h4>
                     <p style="color:#555; font-size:0.9rem; margin:10px 0 0 0;">${mensaje}</p>
                 </div>
