@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rappi Training Insights</title>
+    <title>Rappi Training Insights — Live Dashboard</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
         body {
@@ -14,6 +12,7 @@
             margin: 0;
             padding: 0;
             background-color: #fcfcfc;
+            color: #333;
         }
         .header-banner {
             background: linear-gradient(135deg, #fe433c, #ff6b4a);
@@ -65,21 +64,19 @@
 
         /* Banner de Advertencia de Seguridad */
         .security-warning {
-            background-color: #fff3cd;
-            border-left: 5px solid #ffc107;
-            color: #856404;
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+            color: #721c24;
             padding: 15px 20px;
             margin: 0 auto 30px auto;
-            max-width: 960px;
+            max-width: 1100px;
             border-radius: 8px;
-            text-align: left;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
             font-size: 0.95rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
-        .security-warning strong { color: #533f03; }
 
         /* Agenda Resumida */
-        .agenda-section { max-width: 1000px; margin: 0 auto 40px auto; text-align: left; }
+        .agenda-section { max-width: 1100px; margin: 0 auto 40px auto; text-align: left; }
         .agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; }
         .agenda-card { background: white; border-radius: 12px; padding: 25px; border: 1px solid #eef0f2; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .agenda-card h3 { margin-top: 0; font-size: 1.4rem; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; }
@@ -109,81 +106,53 @@
         .card-dudas .meet-inline-btn:hover { background-color: #1557b0; }
 
         /* Google Calendar Embed */
-        .calendar-container { max-width: 1000px; margin: 40px auto 0 auto; text-align: center; }
+        .calendar-container { max-width: 1100px; margin: 40px auto 0 auto; text-align: center; }
         .calendar-title { font-size: 1.8rem; color: #333; margin-bottom: 10px; }
         .calendar-subtitle { color: #666; margin-bottom: 25px; }
         .responsive-iframe-container {
             position: relative;
             overflow: hidden;
             width: 100%;
-            padding-top: 65%; 
+            padding-top: 60%; 
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             border: 1px solid #eef0f2;
             background: #ffffff;
         }
         .responsive-iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        /* Zona de Carga Drag & Drop */
-        .upload-zone {
-            display: none; 
-            background: white;
-            border: 2px dashed #fe433c;
-            padding: 30px 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 30px;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-        .upload-zone:hover { background-color: #fff5f5; }
-        .upload-zone:active { transform: scale(0.99); }
-
-        /* Grid Dinámico de Resultados */
+        /* Grid Organizador de Tarjetas Excel */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-            font-family: sans-serif;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
+        
         .metric-card {
             background: white;
             border: 1px solid #eef0f2;
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            padding: 15px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        
+        /* Contenedor responsivo interno para cada iframe de Google Sheets */
+        .sheet-frame-wrapper {
             position: relative;
-            animation: fadeIn 0.4s ease;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 75%; /* Ajuste de altura ideal para ver las tablas */
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
         }
-
-        /* 🔒 CONTROL TOTAL POR CSS: Los botones dependen de la clase del body */
-        .delete-card-btn {
-            display: none; 
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #ffebee;
-            color: #c62828;
-            border: none;
-            border-radius: 6px;
-            padding: 5px 8px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .delete-card-btn:hover { background: #c62828; color: white; }
-
-        /* Si el cuerpo tiene el modo admin activo, muestra los botones automáticamente */
-        body.modo-admin-activo .delete-card-btn { display: block !important; }
-        body.modo-admin-activo .upload-zone { display: block !important; }
+        .sheet-frame-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
         @media (max-width: 768px) {
             .agenda-grid { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: 1fr; }
             .responsive-iframe-container { padding-top: 130%; }
         }
     </style>
@@ -193,16 +162,15 @@
     <div class="header-banner">
         <h1>Rappi Training Insights</h1>
         <p>Capacitaciones & Métricas — Soporte & Procesos</p>
-        <button id="admin-login-btn" onclick="solicitarAccesoAdmin()" style="margin-top: 12px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">🔒 Modo Editor</button>
     </div>
 
     <div class="tabs-container">
-        <button id="btn-tab-agendamientos" class="tab-button active" onclick="switchTab(this, 'agendamientos')">📅 Agendamientos</button>
-        <button id="btn-tab-metricas" class="tab-button" onclick="switchTab(this, 'metricas')">📊 Métricas e Insights</button>
+        <button class="tab-button active" onclick="switchTab(this, 'agendamientos')">📅 Agendamientos</button>
+        <button class="tab-button" onclick="switchTab(this, 'metricas')">📊 Métricas e Insights</button>
     </div>
 
     <div id="agendamientos" class="tab-content active">
-        <div class="security-warning">
+        <div class="security-warning" style="background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404;">
             ⚠️ <strong>Acceso Exclusivo @rappi.com:</strong> Estas sesiones y enlaces son estrictamente para uso interno. El ingreso a las salas virtuales está configurado para <strong>admitir únicamente correos corporativos de Rappi</strong>. Intentos de acceso con cuentas personales serán rechazados por el sistema de forma automática.
         </div>
 
@@ -247,7 +215,7 @@
             </div>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid #eef0f2; margin: 40px auto; max-width: 1000px;">
+        <hr style="border: 0; border-top: 1px solid #eef0f2; margin: 40px auto; max-width: 1100px;">
 
         <div class="calendar-container">
             <h2 class="calendar-title">Cronograma y Sesiones Futuras</h2>
@@ -259,273 +227,35 @@
     </div>
 
     <div id="metricas" class="tab-content">
-        <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Analizador de Capacitaciones</h2>
-        <p id="metrics-intro-text" style="text-align: center; color: #666; margin-bottom: 30px;">Cargando análisis...</p>
-        
-        <div id="main-upload-zone" class="upload-zone" onclick="document.getElementById('excel-file-input').click()">
-            <span style="font-size: 1.8rem; display: block; margin-bottom: 8px;">📤</span>
-            <strong style="color: #333; font-size: 1.2rem;">Subir Reporte Excel</strong>
-            <p style="color: #666; font-size: 0.95rem; margin: 6px 0 0 0;">Haz clic aquí o arrastra tus archivos para procesar múltiples reportes en simultáneo.</p>
-            <input type="file" id="excel-file-input" accept=".xlsx, .xls" multiple style="display: none;" onchange="handleFileUpload(event)">
+        <div class="security-warning">
+            🔒 <strong>Información Confidencial Restringida:</strong> Estas métricas se actualizan automáticamente en tiempo real. Para visualizarlas, debes mantener abierta tu sesión con tu cuenta corporativa <strong>@rappi.com</strong>. Si algún agente externo o externo a la organización intenta abrir esta pestaña, Google le denegará el acceso inmediatamente.
         </div>
 
-        <div id="detail-body" class="metrics-grid"></div>
-    </div>
+        <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Resultados de Formularios en Vivo</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 35px;">Usa las pestañas internas de cada tarjeta para navegar por las respuestas y las hojas dinámicas.</p>
 
-    <script>
-        let esAdmin = false;
-        const CLAVE_CORRECTA = "rappi2026"; 
-
-        function switchTab(buttonElement, tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        <div class="metrics-grid">
             
-            const target = document.getElementById(tabId);
-            if(target) target.classList.add('active');
-            if(buttonElement) buttonElement.classList.add('active');
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const guardadas = localStorage.getItem("rappi_metrics_cards");
-            if (guardadas) {
-                const container = document.getElementById('detail-body');
-                if (container) container.innerHTML = guardadas;
-            }
-
-            const modoEditorGuardado = localStorage.getItem("rappi_admin_session");
-            if (modoEditorGuardado === "activo") {
-                activarVisualesDeEditor();
-            } else {
-                const introText = document.getElementById('metrics-intro-text');
-                if(introText) introText.innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
-            }
-        });
-
-        function guardarTableroEnMemoria() {
-            const container = document.getElementById('detail-body');
-            if (container) {
-                localStorage.setItem("rappi_metrics_cards", container.innerHTML);
-            }
-        }
-
-        function activarVisualesDeEditor() {
-            esAdmin = true;
-            document.body.classList.add('modo-admin-activo'); // Activación universal por CSS
-            
-            const introText = document.getElementById('metrics-intro-text');
-            const loginBtn = document.getElementById('admin-login-btn');
-
-            if(introText) introText.innerText = "Sube tus reportes de Excel para interpretar los datos automáticamente. Puedes eliminar tarjetas usando el botón rojo.";
-            if(loginBtn) {
-                loginBtn.innerText = "🔓 Editor Activo";
-                loginBtn.style.background = "#2e7d32";
-            }
-        }
-
-        function solicitarAccesoAdmin() {
-            if (esAdmin) {
-                if(confirm("¿Deseas salir del Modo Editor? Tu tablero guardado seguirá visible para todos.")){
-                    esAdmin = false;
-                    localStorage.removeItem("rappi_admin_session");
-                    document.body.classList.remove('modo-admin-activo'); // Desactivación universal
-                    
-                    if(document.getElementById('admin-login-btn')) {
-                        document.getElementById('admin-login-btn').innerText = "🔒 Modo Editor";
-                        document.getElementById('admin-login-btn').style.background = "rgba(255,255,255,0.2)";
-                    }
-                    if(document.getElementById('metrics-intro-text')) document.getElementById('metrics-intro-text').innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
-                }
-                return;
-            }
-
-            let pass = prompt("Por favor ingresa la clave de Administrador para modificar reportes:");
-            if (pass === CLAVE_CORRECTA) {
-                localStorage.setItem("rappi_admin_session", "activo");
-                activarVisualesDeEditor();
-                alert("¡Acceso concedido! El navegador recordará tu sesión de Editor.");
-            } else if (pass !== null) {
-                alert("Clave incorrecta. Modo de solo lectura activado.");
-            }
-        }
-
-        function handleFileUpload(event) {
-            const files = event.target.files;
-            if (!files || files.length === 0) return;
-
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const firstSheetName = workbook.SheetNames[0];
-                        const worksheet = workbook.Sheets[firstSheetName];
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-                        if (jsonData.length > 0) {
-                            calcularYMostrarMetricas(file.name, jsonData);
-                        } else {
-                            mostrarErrorCard(file.name, "El archivo está vacío o la pestaña principal no tiene datos.");
-                        }
-                    } catch (error) {
-                        mostrarErrorCard(file.name, "No se pudo leer el formato del Excel.");
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            });
-        }
-
-        function eliminarTarjeta(button) {
-            if (!esAdmin) {
-                alert("Por favor ingresa primero al 'Modo Editor' con tu clave arriba para poder eliminar.");
-                return;
-            }
-            if (confirm("¿Segura que deseas eliminar definitivamente este análisis del tablero?")) {
-                const card = button.parentElement;
-                if(card) {
-                    card.remove();
-                    guardarTableroEnMemoria();
-                }
-            }
-        }
-
-        function calcularYMostrarMetricas(fileName, rows) {
-            const container = document.getElementById('detail-body');
-            if(!container) return;
-            
-            let totalNotas = 0;
-            let aprobados = 0;
-            let conteoAgentes = 0;
-
-            let conteoPreguntas = {};
-            let aciertosPreguntas = {};
-
-            rows.forEach(row => {
-                const llavePuntuacion = Object.keys(row).find(k => k.toLowerCase().includes('puntuaci') || k.toLowerCase().includes('score') || k.toLowerCase().includes('nota'));
-                let esEscalaDiez = false;
-                let notaLimpia = NaN;
-
-                if (llavePuntuacion && row[llavePuntuacion] !== undefined) {
-                    let valorRaw = String(row[llavePuntuacion]).trim();
-
-                    if (valorRaw.includes('/')) {
-                        const partes = valorRaw.split('/');
-                        notaLimpia = parseFloat(partes[0].trim());
-                        if (parseFloat(partes[1].trim()) === 10) esEscalaDiez = true;
-                    } else {
-                        notaLimpia = parseFloat(valorRaw);
-                        if (notaLimpia <= 10) esEscalaDiez = true;
-                    }
-
-                    if (!isNaN(notaLimpia)) {
-                        conteoAgentes++;
-                        let notaNormalizada = esEscalaDiez ? notaLimpia * 10 : notaLimpia;
-                        totalNotas += notaNormalizada;
-                        if (notaNormalizada >= 70) { aprobados++; }
-                    }
-                }
-
-                Object.keys(row).forEach(key => {
-                    if (key.includes('?') || key.toLowerCase().includes('pregunta') || key.length > 25) {
-                        if (key.toLowerCase().includes('correo') || key.toLowerCase().includes('nombre') || key.toLowerCase().includes('puntuaci') || key.toLowerCase().includes('marca de tiempo')) {
-                            return;
-                        }
-
-                        if (!conteoPreguntas[key]) {
-                            conteoPreguntas[key] = 0;
-                            aciertosPreguntas[key] = 0;
-                        }
-                        conteoPreguntas[key]++;
-                        
-                        const resp = String(row[key]).toLowerCase().trim();
-                        let notaAgente = esEscalaDiez ? notaLimpia * 10 : notaLimpia;
-                        if (!isNaN(notaAgente) && notaAgente >= 75 && resp !== "" && !resp.includes("incorrecto")) {
-                            aciertosPreguntas[key]++;
-                        }
-                    }
-                });
-            });
-
-            if (conteoAgentes === 0) { conteoAgentes = rows.length; }
-
-            const promedioGeneral = conteoAgentes > 0 ? Math.round(totalNotas / conteoAgentes) : 0;
-            const porcentajeAprobacion = conteoAgentes > 0 ? Math.round((aprobados / conteoAgentes) * 100) : 0;
-
-            let rankingQuestions = [];
-            Object.keys(conteoPreguntas).forEach(q => {
-                let pct = conteoPreguntas[q] > 0 ? Math.round((aciertosPreguntas[q] / conteoPreguntas[q]) * 100) : 0;
-                
-                if (pct > promedioGeneral) { pct = Math.round(promedioGeneral * (pct / 100)); }
-                if (promedioGeneral < 90 && pct >= 95) { pct = Math.round(promedioGeneral - (Math.random() * 8 + 2)); }
-
-                rankingQuestions.push({ pregunta: q, porcentaje: pct });
-            });
-
-            rankingQuestions.sort((a, b) => a.porcentaje - b.porcentaje);
-
-            const desaprobadas = rankingQuestions.slice(0, 2); 
-            const aprobadasTop = rankingQuestions.slice(-2).reverse();
-
-            let afectacionHTML = desaprobadas.map(p => `<li>⚠️ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
-            let éxitosHTML = aprobadasTop.map(p => `<li>✅ <strong>${p.porcentaje}% de acierto:</strong> ${p.pregunta}</li>`).join('');
-
-            if (!afectacionHTML || promedioGeneral < 90) {
-                afectacionHTML = desaprobadas.map(p => `<li>⚠️ <strong>${p.porcentaje > 0 ? p.porcentaje : Math.round(promedioGeneral - 12)}% de acierto:</strong> ${p.pregunta}</li>`).join('');
-            }
-            if (!éxitosHTML) { éxitosHTML = '<li>📋 Resultados uniformes en la muestra analizada.</li>'; }
-
-            const cardHTML = `
-                <div class="metric-card" style="margin-bottom: 25px;">
-                    <button class="delete-card-btn" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
-                    <h4 style="margin-top:0; color:#333; font-size:1.2rem; border-bottom:1px solid #f5f5f5; padding-bottom: 10px; padding-right: 80px;">
-                        📋 ${(fileName || "Reporte").replace(/\.[^/.]+$/, "")}
-                    </h4>
-                    
-                    <div style="display: flex; justify-content: space-around; background: #fafafa; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
-                        <div>
-                            <strong style="font-size: 1.6rem; color: #2e7d32;">${promedioGeneral}%</strong>
-                            <br><small style="color:#777; font-weight: 600;">Promedio</small>
-                        </div>
-                        <div>
-                            <strong style="font-size: 1.6rem; color: #1565c0;">${porcentajeAprobacion}%</strong>
-                            <br><small style="color:#777; font-weight: 600;">Aprobación</small>
-                        </div>
-                        <div>
-                            <strong style="font-size: 1.6rem; color: #e65100;">${conteoAgentes}</strong>
-                            <br><small style="color:#777; font-weight: 600;">Agentes</small>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px; text-align: left; font-size: 0.9rem; line-height: 1.4;">
-                        <h5 style="margin: 0 0 8px 0; color: #c62828; font-size: 0.95rem;">🚨 Preguntas con Mayor Afectación</h5>
-                        <ul style="margin: 0 0 15px 0; padding-left: 20px; color: #555;">
-                            ${afectacionHTML}
-                        </ul>
-
-                        <h5 style="margin: 0 0 8px 0; color: #2e7d32; font-size: 0.95rem;">🌟 Puntos Fuertes</h5>
-                        <ul style="margin: 0; padding-left: 20px; color: #555;">
-                            ${éxitosHTML}
-                        </ul>
-                    </div>
+            <div class="metric-card">
+                <h3 style="margin: 0 0 12px 0; font-size: 1.15rem; color: #fe433c;">📋 Capacitación Juan Onboarding</h3>
+                <div class="sheet-frame-wrapper">
+                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSgFGAiPSyT2bExQYnEaoqNeYYJKOJCN4F-IdCNH9jPsUxVcw8ZONdNpVWUu0_mhgXRlaIohWVn592E/pubhtml?widget=true&amp;headers=false"></iframe>
                 </div>
-            `;
-            
-            container.innerHTML += cardHTML;
-            guardarTableroEnMemoria(); 
-        }
+            </div>
 
-        function mostrarErrorCard(fileName, mensaje) {
-            const container = document.getElementById('detail-body');
-            if(!container) return;
-            container.innerHTML += `
-                <div class="metric-card" style="border-color: #ffcdd2; background: #fff9f9;">
-                    <button class="delete-card-btn" onclick="eliminarTarjeta(this)">🗑️ Eliminar</button>
-                    <h4 style="margin-top:0; color:#c62828; font-size:1.1rem; padding-right: 80px;">❌ ${fileName}</h4>
-                    <p style="color:#555; font-size:0.9rem; margin:10px 0 0 0;">${mensaje}</p>
+            <div class="metric-card">
+                <h3 style="margin: 0 0 12px 0; font-size: 1.15rem; color: #fe433c;">📋 Capacitación Expansiones Manager</h3>
+                <div class="sheet-frame-wrapper">
+                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2c2JxLDc6HhJ3JuXylVT_y0vFNxsOL-qedhsGqwXiZWGLgxljHRzkix-35G7b8zm1fosvU1gw3Kfw/pubhtml?widget=true&amp;headers=false"></iframe>
                 </div>
-            `;
-            guardarTableroEnMemoria();
-        }
-    </script>
-</body>
-</html>
+            </div>
+
+            <div class="metric-card">
+                <h3 style="margin: 0 0 12px 0; font-size: 1.15rem; color: #fe433c;">📋 Capacitación Cambios Contractuales</h3>
+                <div class="sheet-frame-wrapper">
+                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSSCwjI2ccN6ULTStXV7xVa1VRwVC1CGI4M59qzhUGZDOTkH-ufMW8htTjZibRoUFtM1Hgus_DBCejr/pubhtml?widget=true&amp;headers=false"></iframe>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <h3 style="margin: 0 0 12px 0; font-size: 1.15rem; color: #fe43
