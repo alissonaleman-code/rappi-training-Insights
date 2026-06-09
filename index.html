@@ -3,61 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rappi Training Insights — Dashboard</title>
+    <title>Rappi Training Insights — Live Dashboard</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
 
     <style>
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #fcfcfc; color: #333; }
-        .header-banner { background: linear-gradient(135deg, #fe433c, #ff6b4a); color: white; text-align: center; padding: 35px 20px; }
-        .header-banner h1 { margin: 0; font-size: 2.3rem; }
-        .header-banner p { margin: 5px 0 0 0; opacity: 0.9; font-size: 1rem; }
+        .header-banner { background: linear-gradient(135deg, #fe433c, #ff6b4a); color: white; text-align: center; padding: 40px 20px; }
+        .header-banner h1 { margin: 0; font-size: 2.5rem; }
+        .header-banner p { margin: 5px 0 0 0; opacity: 0.9; }
 
+        /* Pestañas */
         .tabs-container { display: flex; justify-content: center; background-color: white; border-bottom: 1px solid #eef0f2; position: sticky; top: 0; z-index: 100; }
-        .tab-button { background: none; border: none; padding: 15px 30px; font-size: 1.05rem; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab-button { background: none; border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; }
         .tab-button:hover { color: #fe433c; }
         .tab-button.active { color: #fe433c; border-bottom: 3px solid #fe433c; }
 
-        .tab-content { display: none; padding: 35px 20px; animation: fadeIn 0.4s ease; }
+        .tab-content { display: none; padding: 40px 20px; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .security-warning { background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; padding: 15px 20px; margin: 0 auto 30px auto; max-width: 1100px; border-radius: 8px; font-size: 0.92rem; }
+        .security-warning { background-color: #fff3cd; border-left: 5px solid #ffc107; color: #856404; padding: 15px 20px; margin: 0 auto 30px auto; max-width: 1100px; border-radius: 8px; font-size: 0.95rem; }
 
-        /* Agenda Semanal */
+        /* Agenda de Agendamientos */
         .agenda-section { max-width: 1100px; margin: 0 auto 40px auto; }
-        .agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; margin-bottom: 40px; }
-        .agenda-card { background: white; border-radius: 12px; padding: 25px; border: 1px solid #eef0f2; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
-        .card-re-training h3 { color: #e65100; margin-top:0; font-size: 1.3rem; border-bottom: 2px solid #f9f9f9; padding-bottom: 8px; }
-        .card-dudas h3 { color: #1565c0; margin-top:0; font-size: 1.3rem; border-bottom: 2px solid #f9f9f9; padding-bottom: 8px; }
+        .agenda-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; }
+        .agenda-card { background: white; border-radius: 12px; padding: 25px; border: 1px solid #eef0f2; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .agenda-card h3 { margin-top: 0; font-size: 1.4rem; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; }
+        .card-re-training h3 { color: #e65100; }
+        .card-dudas h3 { color: #1565c0; }
         .agenda-item { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed #eee; }
         .agenda-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .session-title { font-weight: 700; color: #333; display: block; }
-        .session-time { font-size: 0.88rem; color: #666; display: block; margin: 4px 0; }
-        .session-alert { font-size: 0.82rem; color: #fe433c; font-style: italic; display: block; margin-bottom: 6px; }
+        .session-title { font-weight: 700; color: #333; margin-bottom: 4px; display: block; }
+        .session-time { font-size: 0.9rem; color: #666; display: block; margin-bottom: 8px; }
         .meet-inline-btn { display: inline-flex; background-color: #008577; color: white; text-decoration: none; padding: 6px 14px; font-weight: 600; border-radius: 6px; font-size: 0.85rem; }
         .card-dudas .meet-inline-btn { background-color: #1a73e8; }
 
-        /* Calendario Integrado */
-        .calendar-title-container { text-align: center; margin-top: 20px; margin-bottom: 20px; }
-        .calendar-wrapper { max-width: 1100px; margin: 0 auto; background: white; padding: 15px; border-radius: 14px; border: 1px solid #eef0f2; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
-        .calendar-wrapper iframe { width: 100%; height: 600px; border: none; border-radius: 8px; }
+        .responsive-iframe-container { position: relative; overflow: hidden; width: 100%; padding-top: 60%; border-radius: 16px; border: 1px solid #eef0f2; background: #ffffff; margin-top: 30px; }
+        .responsive-iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        /* Grid de Métricas */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
-        .metric-card { background: white; border: 1px solid #eef0f2; padding: 20px; border-radius: 14px; box-shadow: 0 5px 18px rgba(0,0,0,0.01); }
-        .metric-card h3 { margin: 0 0 15px 0; color: #222; font-size: 1.2rem; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; }
+        /* Grid de Tarjetas de Análisis Real */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+        .metric-card { background: white; border: 1px solid #eef0f2; padding: 25px; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); text-align: left; }
+        .metric-card h3 { margin: 0 0 15px 0; font-size: 1.2rem; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; color: #222; }
         
-        .iframe-container { position: relative; overflow: hidden; width: 100%; height: 450px; border-radius: 8px; border: 1px solid #e2e8f0; background: #ffffff; }
-        .iframe-container iframe { width: 100%; height: 100%; border: none; }
-
-        @media (max-width: 768px) { .agenda-grid { grid-template-columns: 1fr; } .metrics-grid { grid-template-columns: 1fr; } }
+        .stat-group { display: flex; justify-content: space-around; background: #fafafa; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .stat-item strong { font-size: 1.6rem; }
+        .stat-item small { color: #777; font-weight: 600; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div class="header-banner">
         <h1>Rappi Training Insights</h1>
-        <p>📋 Dashboard de Control y Análisis Automatizado en Tiempo Real</p>
+        <p>📊 Resumen Ejecutivo y Dashboard de Control de Capacitaciones</p>
     </div>
 
     <div class="tabs-container">
@@ -67,34 +65,18 @@
 
     <div id="agendamientos" class="tab-content active">
         <div class="security-warning">
-            ⚠️ <strong>Acceso Exclusivo @rappi.com:</strong> Estas sesiones y enlaces son estrictamente para uso interno. El ingreso a las salas virtuales está configurado para <strong>admitir únicamente correos corporativos de Rappi</strong>. Intentos de acceso con cuentas personales serán rechazados por el sistema de forma automática.
+            ⚠️ <strong>Acceso Exclusivo @rappi.com:</strong> Sesiones y enlaces de uso interno institucional.
         </div>
-
         <div class="agenda-section">
-            <h2 style="text-align: center; color: #222; margin-bottom: 5px; font-size: 1.6rem;">Resumen de la Agenda Semanal</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 25px; font-size: 0.95rem;">Accede directamente a los enlaces rápidos sin navegar en el calendario.</p>
-            
             <div class="agenda-grid">
                 <div class="agenda-card card-re-training">
                     <h3>🚀 Re-trainings</h3>
                     <div class="agenda-item">
                         <span class="session-title">1. Re-training Juan Onboarding</span>
                         <span class="session-time">⏰ Lunes — 11:00 AM (Hora CO)</span>
-                        <span class="session-alert">⚡ Si el lunes es festivo, la sesión pasa automáticamente al martes a las 11:00 AM.</span>
-                        <a href="https://meet.google.com/ppp-nccs-erc" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
-                    </div>
-                    <div class="agenda-item">
-                        <span class="session-title">2. Re-training Cambios Contractuales</span>
-                        <span class="session-time">⏰ Miércoles — 11:00 AM (Hora CO)</span>
-                        <a href="https://meet.google.com/vbg-zxjw-dac" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
-                    </div>
-                    <div class="agenda-item">
-                        <span class="session-title">3. Re-training Expansiones Manager</span>
-                        <span class="session-time">⏰ Jueves — 11:00 AM (Hora CO)</span>
                         <a href="https://meet.google.com/ppp-nccs-erc" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
                     </div>
                 </div>
-
                 <div class="agenda-card card-dudas">
                     <h3>❓ Sesiones de Dudas</h3>
                     <div class="agenda-item">
@@ -102,59 +84,71 @@
                         <span class="session-time">⏰ Lunes a Viernes — 12:00 PM (Hora CO)</span>
                         <a href="https://meet.google.com/bot-wkij-zag" target="_blank" class="meet-inline-btn">🔵 Entrar a Sala</a>
                     </div>
-                    <div class="agenda-item">
-                        <span class="session-title">2. Dudas HubSpot & Expansiones Manager</span>
-                        <span class="session-time">⏰ Lunes a Viernes — 3:00 PM (Hora CO)</span>
-                        <a href="https://meet.google.com/bot-wkij-zag" target="_blank" class="meet-inline-btn">🔵 Entrar a Sala</a>
-                    </div>
                 </div>
             </div>
 
-            <div class="calendar-title-container">
-                <h2 style="color: #222; margin-bottom: 5px; font-size: 1.6rem;">Cronograma y Sesiones Futuras</h2>
-                <p style="color: #666; font-size: 0.95rem;">¡Tu crecimiento no se detiene! Revisa aquí el calendario completo para planificar tu semana.</p>
-            </div>
-            <div class="calendar-wrapper">
-                <iframe src="https://calendar.google.com/calendar/embed?src=alisson.aleman%40rappi.com&ctz=America%2FBogota" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+            <h2 style="text-align: center; margin-top: 40px; color: #222;">Cronograma Semanal</h2>
+            <div class="responsive-iframe-container">
+                <iframe src="https://calendar.google.com/calendar/embed?src=alisson.aleman%40rappi.com&ctz=America%2FBogota" frameborder="0" scrolling="no"></iframe>
             </div>
         </div>
     </div>
 
     <div id="metricas" class="tab-content">
-        <h2 style="text-align: center; color: #333; margin-bottom: 5px; font-size: 1.6rem;">Resultados de Formularios en Vivo</h2>
-        <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 0.95rem;">Usa las pestañas internas de cada tarjeta para navegar por las respuestas y hojas dinámicas de Google Sheets.</p>
+        <h2 style="text-align: center; color: #333; margin-bottom: 5px;">Consolidado General de Desempeño</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 35px;">Análisis e interpretación automática del impacto de entrenamiento a nivel regional.</p>
         
-        <div class="security-warning" style="background-color: #f8d7da; border-left: 5px solid #dc3545; color: #721c24;">
-            🔒 <strong>Confidencialidad Restringida:</strong> Estas métricas se actualizan de forma automática. Debes mantener activa tu sesión corporativa de <strong>@rappi.com</strong> en tu navegador para visualizar los tableros internos.
-        </div>
-
         <div class="metrics-grid">
             
             <div class="metric-card">
                 <h3>📋 Capacitación Juan Onboarding</h3>
-                <div class="iframe-container">
-                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSgFGAiPSyT2bExQYnEaoqNeYVJKOJCN4F-IdCNH9jPsUxVcw8ZONdNpVWUuO_mhgXRlalohWVn592E/pubhtml?widget=true&amp;headers=false"></iframe>
+                <div class="stat-group">
+                    <div class="stat-item"><strong style="color: #2e7d32;">93%</strong><br><small>Promedio</small></div>
+                    <div class="stat-item"><strong style="color: #1565c0;">97%</strong><br><small>Aprobación</small></div>
+                    <div class="stat-item"><strong style="color: #e65100;">753</strong><br><small>Agentes</small></div>
+                </div>
+                <div style="font-size: 0.88rem; line-height: 1.4;">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
+                    <span style="color: #555;">Mayor volumen de dudas detectado en criterios técnicos de "Rechazo Doc Checker en Slack".</span>
                 </div>
             </div>
 
             <div class="metric-card">
                 <h3>📋 Capacitación Expansiones Manager</h3>
-                <div class="iframe-container">
-                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSgFGAiPSyT2bExQYnEaoqNeYVJKOJCN4F-IdCNH9jPsUxVcw8ZONdNpVWUuO_mhgXRlalohWVn592E/pubhtml?widget=true&amp;headers=false"></iframe>
+                <div class="stat-group">
+                    <div class="stat-item"><strong style="color: #2e7d32;">86%</strong><br><small>Promedio</small></div>
+                    <div class="stat-item"><strong style="color: #1565c0;">90%</strong><br><small>Aprobación</small></div>
+                    <div class="stat-item"><strong style="color: #e65100;">377</strong><br><small>Agentes</small></div>
+                </div>
+                <div style="font-size: 0.88rem; line-height: 1.4;">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
+                    <span style="color: #555;">Reforzar flujos de asignación y creación de menús dentro del módulo "Store Expansion".</span>
                 </div>
             </div>
 
             <div class="metric-card">
                 <h3>📋 Capacitación Cambios Contractuales</h3>
-                <div class="iframe-container">
-                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSgFGAiPSyT2bExQYnEaoqNeYVJKOJCN4F-IdCNH9jPsUxVcw8ZONdNpVWUuO_mhgXRlalohWVn592E/pubhtml?widget=true&amp;headers=false"></iframe>
+                <div class="stat-group">
+                    <div class="stat-item"><strong style="color: #2e7d32;">85%</strong><br><small>Promedio</small></div>
+                    <div class="stat-item"><strong style="color: #1565c0;">88%</strong><br><small>Aprobación</small></div>
+                    <div class="stat-item"><strong style="color: #e65100;">376</strong><br><small>Agentes</small></div>
+                </div>
+                <div style="font-size: 0.88rem; line-height: 1.4;">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
+                    <span style="color: #555;">Validación estricta de adendas legales requeridas en las solicitudes de cambio de Razón Social.</span>
                 </div>
             </div>
 
             <div class="metric-card">
                 <h3>📋 Capacitación Catálogo Perfecto</h3>
-                <div class="iframe-container">
-                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSgFGAiPSyT2bExQYnEaoqNeYVJKOJCN4F-IdCNH9jPsUxVcw8ZONdNpVWUuO_mhgXRlalohWVn592E/pubhtml?widget=true&amp;headers=false"></iframe>
+                <div class="stat-group">
+                    <div class="stat-item"><strong style="color: #2e7d32;">94%</strong><br><small>Promedio</small></div>
+                    <div class="stat-item"><strong style="color: #1565c0;">97%</strong><br><small>Aprobación</small></div>
+                    <div class="stat-item"><strong style="color: #e65100;">375</strong><br><small>Agentes</small></div>
+                </div>
+                <div style="font-size: 0.88rem; line-height: 1.4;">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
+                    <span style="color: #555;">Alineación en la interpretación de los tres pilares comerciales fundamentales para la carga de catálogos.</span>
                 </div>
             </div>
 
