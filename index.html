@@ -275,39 +275,55 @@
         let esAdmin = false;
         const CLAVE_CORRECTA = "rappi2026"; 
 
-        // 🧠 SISTEMA DE PESTAÑAS INMUNE A ERRORES
+        // 🧠 1. SISTEMA DE PESTAÑAS INDEPENDIENTE (No se rompe por nada en el mundo)
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            const tabs = ['agendamientos', 'metricas'];
+            tabs.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.remove('active');
+            });
+            
+            const btnAgendamientos = document.getElementById('btn-tab-agendamientos');
+            const btnMetricas = document.getElementById('btn-tab-metricas');
+            if(btnAgendamientos) btnAgendamientos.classList.remove('active');
+            if(btnMetricas) btnMetricas.classList.remove('active');
             
             const targetContent = document.getElementById(tabId);
-            if (targetContent) {
-                targetContent.classList.add('active');
-            }
+            if (targetContent) targetContent.classList.add('active');
             
-            if (tabId === 'agendamientos') {
-                document.getElementById('btn-tab-agendamientos').classList.add('active');
-            } else {
-                document.getElementById('btn-tab-metricas').classList.add('active');
+            if (tabId === 'agendamientos' && btnAgendamientos) {
+                btnAgendamientos.classList.add('active');
+            } else if (tabId === 'metricas' && btnMetricas) {
+                btnMetricas.classList.add('active');
             }
         }
 
-        // 📥 AL CARGAR LA PÁGINA: Recuperación ultra segura de datos
+        // 📥 2. PROCESADOR DE ARRANQUE SEGURO CON FILTRO DE CORRUPCIÓN
         document.addEventListener("DOMContentLoaded", () => {
-            const guardadas = localStorage.getItem("rappi_metrics_cards");
-            if (guardadas) {
-                document.getElementById('detail-body').innerHTML = guardadas;
+            try {
+                // Forzar limpieza si detectamos formato viejo de la sesión anterior
+                const guardadas = localStorage.getItem("rappi_metrics_cards");
+                if (guardadas) {
+                    // Si el HTML guardado contiene rastros del script viejo roto, lo desinfectamos
+                    if (guardadas.includes("window.event") || guardadas.includes("eliminarTarjeta(this)")) {
+                        localStorage.removeItem("rappi_metrics_cards");
+                    } else {
+                        const container = document.getElementById('detail-body');
+                        if (container) container.innerHTML = guardadas;
+                    }
+                }
+            } catch(e) {
+                console.log("Memoria limpia prevenida.");
             }
 
+            // Inicializar sesión de administrador de forma aislada
             const modoEditorGuardado = localStorage.getItem("rappi_admin_session");
             if (modoEditorGuardado === "activo") {
                 activarVisualesDeEditor();
             } else {
-                document.getElementById('metrics-intro-text').innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
-                // Ocultar botes de basura de forma segura solo si existen elementos creados
-                setTimeout(() => {
-                    document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'none');
-                }, 100);
+                const introText = document.getElementById('metrics-intro-text');
+                if(introText) introText.innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
+                ocultarBotonesEliminar();
             }
         });
 
@@ -316,6 +332,12 @@
             if (container) {
                 localStorage.setItem("rappi_metrics_cards", container.innerHTML);
             }
+        }
+
+        function ocultarBotonesEliminar() {
+            document.querySelectorAll('.delete-card-btn').forEach(btn => {
+                btn.style.display = 'none';
+            });
         }
 
         function activarVisualesDeEditor() {
@@ -328,68 +350,4 @@
             if(introText) introText.innerText = "Sube tus reportes de Excel para interpretar los datos automáticamente. Puedes eliminar tarjetas usando el botón rojo.";
             if(loginBtn) {
                 loginBtn.innerText = "🔓 Editor Activo";
-                loginBtn.style.background = "#2e7d32";
-            }
-            
-            document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'block');
-        }
-
-        function solicitarAccesoAdmin() {
-            if (esAdmin) {
-                if(confirm("¿Deseas salir del Modo Editor? Tu tablero guardado seguirá visible para todos.")){
-                    esAdmin = false;
-                    localStorage.removeItem("rappi_admin_session");
-                    if(document.getElementById('main-upload-zone')) document.getElementById('main-upload-zone').style.display = 'none';
-                    if(document.getElementById('admin-login-btn')) {
-                        document.getElementById('admin-login-btn').innerText = "🔒 Modo Editor";
-                        document.getElementById('admin-login-btn').style.background = "rgba(255,255,255,0.2)";
-                    }
-                    if(document.getElementById('metrics-intro-text')) document.getElementById('metrics-intro-text').innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
-                    document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'none');
-                }
-                return;
-            }
-
-            let pass = prompt("Por favor ingresa la clave de Administrador para modificar reportes:");
-            if (pass === CLAVE_CORRECTA) {
-                localStorage.setItem("rappi_admin_session", "activo");
-                activarVisualesDeEditor();
-                alert("¡Acceso concedido! El navegador recordará tu sesión de Editor.");
-            } else if (pass !== null) {
-                alert("Clave incorrecta. Modo de solo lectura activado.");
-            }
-        }
-
-        function handleFileUpload(event) {
-            const files = event.target.files;
-            if (!files || files.length === 0) return;
-
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const firstSheetName = workbook.SheetNames[0];
-                        const worksheet = workbook.Sheets[firstSheetName];
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-                        if (jsonData.length > 0) {
-                            calcularYMostrarMetricas(file.name, jsonData);
-                        } else {
-                            mostrarErrorCard(file.name, "El archivo está vacío o la pestaña principal no tiene datos.");
-                        }
-                    } catch (error) {
-                        mostrarErrorCard(file.name, "No se pudo leer el formato del Excel.");
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            });
-        }
-
-        function eliminarTarjeta(button) {
-            if (!esAdmin) {
-                alert("Por favor ingresa primero al 'Modo Editor' con tu clave arriba para poder eliminar.");
-                return;
-            }
-            if (confirm("¿Segura que deseas eliminar definitivamente
+                loginBtn.style.background = "#2e7d
