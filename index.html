@@ -46,9 +46,12 @@
         .metric-card { background: white; border: 1px solid #eef0f2; padding: 25px; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); text-align: left; }
         .metric-card h3 { margin: 0 0 15px 0; font-size: 1.2rem; border-bottom: 1px solid #f5f5f5; padding-bottom: 10px; color: #222; }
         
-        .stat-group { display: flex; justify-content: space-around; background: #fafafa; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
-        .stat-item strong { font-size: 1.6rem; }
-        .stat-item small { color: #777; font-weight: 600; font-size: 0.8rem; }
+        .stat-group { display: flex; justify-content: space-around; background: #fafafa; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .stat-item strong { font-size: 1.5rem; }
+        .stat-item small { color: #777; font-weight: 600; font-size: 0.78rem; }
+
+        .analysis-text { font-size: 0.88rem; line-height: 1.45; margin-bottom: 12px; }
+        .analysis-text ul { margin: 5px 0 0 0; padding-left: 20px; color: #555; }
     </style>
 </head>
 <body>
@@ -76,6 +79,16 @@
                         <span class="session-time">⏰ Lunes — 11:00 AM (Hora CO)</span>
                         <a href="https://meet.google.com/ppp-nccs-erc" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
                     </div>
+                    <div class="agenda-item">
+                        <span class="session-title">2. Re-training Cambios Contractuales</span>
+                        <span class="session-time">⏰ Miércoles — 11:00 AM (Hora CO)</span>
+                        <a href="https://meet.google.com/vbg-zxjw-dac" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
+                    </div>
+                    <div class="agenda-item">
+                        <span class="session-title">3. Re-training Expansiones Manager</span>
+                        <span class="session-time">⏰ Jueves — 11:00 AM (Hora CO)</span>
+                        <a href="https://meet.google.com/ppp-nccs-erc" target="_blank" class="meet-inline-btn">🟢 Entrar a Sala</a>
+                    </div>
                 </div>
                 <div class="agenda-card card-dudas">
                     <h3>❓ Sesiones de Dudas</h3>
@@ -84,12 +97,17 @@
                         <span class="session-time">⏰ Lunes a Viernes — 12:00 PM (Hora CO)</span>
                         <a href="https://meet.google.com/bot-wkij-zag" target="_blank" class="meet-inline-btn">🔵 Entrar a Sala</a>
                     </div>
+                    <div class="agenda-item">
+                        <span class="session-title">2. Dudas HubSpot & Expansiones Manager</span>
+                        <span class="session-time">⏰ Lunes a Viernes — 3:00 PM (Hora CO)</span>
+                        <a href="https://meet.google.com/bot-wkij-zag" target="_blank" class="meet-inline-btn">🔵 Entrar a Sala</a>
+                    </div>
                 </div>
             </div>
 
             <h2 style="text-align: center; margin-top: 40px; color: #222;">Cronograma Semanal</h2>
             <div class="responsive-iframe-container">
-                <iframe src="https://calendar.google.com/calendar/embed?src=alisson.aleman%40rappi.com&ctz=America%2FBogota" frameborder="0" scrolling="no"></iframe>
+                <iframe src="https://calendar.google.com/calendar/embed?src=c_77f485b060f0891461ff3f79020478144be4cf496fe8da52f41639d2cfcbf128%40group.calendar.google.com&ctz=America%2FBogota" frameborder="0" scrolling="no"></iframe>
             </div>
         </div>
     </div>
@@ -107,22 +125,42 @@
                     <div class="stat-item"><strong style="color: #1565c0;">97%</strong><br><small>Aprobación</small></div>
                     <div class="stat-item"><strong style="color: #e65100;">753</strong><br><small>Agentes</small></div>
                 </div>
-                <div style="font-size: 0.88rem; line-height: 1.4;">
-                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
-                    <span style="color: #555;">Mayor volumen de dudas detectado en criterios técnicos de "Rechazo Doc Checker en Slack".</span>
+                <div class="analysis-text">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Preguntas con Mayor Afectación:</strong>
+                    <ul>
+                        <li>¿En qué momento se considera que una tienda ya está en R2S?</li>
+                        <li>¿Qué información debe contener un menú para que la IA pueda procesarlo?</li>
+                    </ul>
+                </div>
+                <div class="analysis-text">
+                    <strong style="color: #2e7d32; display: block; margin-bottom: 4px;">🌟 Puntos Fuertes:</strong>
+                    <ul>
+                        <li>Dominio en saber a partir de qué momento la tienda quedó R2S y lista.</li>
+                        <li>Uso correcto del formato de archivo recomendado para la lectura de la IA.</li>
+                    </ul>
                 </div>
             </div>
 
             <div class="metric-card">
-                <h3>📋 Capacitación Expansiones Manager</h3>
+                <h3>📋 Capacitación Nuevos Flujos Manager</h3>
                 <div class="stat-group">
                     <div class="stat-item"><strong style="color: #2e7d32;">86%</strong><br><small>Promedio</small></div>
                     <div class="stat-item"><strong style="color: #1565c0;">90%</strong><br><small>Aprobación</small></div>
                     <div class="stat-item"><strong style="color: #e65100;">377</strong><br><small>Agentes</small></div>
                 </div>
-                <div style="font-size: 0.88rem; line-height: 1.4;">
-                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
-                    <span style="color: #555;">Reforzar flujos de asignación y creación de menús dentro del módulo "Store Expansion".</span>
+                <div class="analysis-text">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Preguntas con Mayor Afectación:</strong>
+                    <ul>
+                        <li>Diferencia principal entre Expansión de Marca y Expansión de Tienda. (81% acierto)</li>
+                        <li>¿Qué procede tras recibir la aprobación de Doc Checker en 'Brand Expansion'? (81% acierto)</li>
+                    </ul>
+                </div>
+                <div class="analysis-text">
+                    <strong style="color: #2e7d32; display: block; margin-bottom: 4px;">🌟 Puntos Fuertes:</strong>
+                    <ul>
+                        <li>Identificación del canal correcto para reportar fallas técnicas de los módulos (81%).</li>
+                        <li>Responsabilidad clara si el Take Rate de una negociación requiere aprobación (81%).</li>
+                    </ul>
                 </div>
             </div>
 
@@ -133,9 +171,19 @@
                     <div class="stat-item"><strong style="color: #1565c0;">88%</strong><br><small>Aprobación</small></div>
                     <div class="stat-item"><strong style="color: #e65100;">376</strong><br><small>Agentes</small></div>
                 </div>
-                <div style="font-size: 0.88rem; line-height: 1.4;">
-                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
-                    <span style="color: #555;">Validación estricta de adendas legales requeridas en las solicitudes de cambio de Razón Social.</span>
+                <div class="analysis-text">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Preguntas con Mayor Afectación:</strong>
+                    <ul>
+                        <li>¿Cuáles beneficios de nuevos flujos contractuales están en Portal Manager? (74% acierto)</li>
+                        <li>Identificación del proceso que NO requiere la firma de un contrato (74% acierto).</li>
+                    </ul>
+                </div>
+                <div class="analysis-text">
+                    <strong style="color: #2e7d32; display: block; margin-bottom: 4px;">🌟 Puntos Fuertes:</strong>
+                    <ul>
+                        <li>Generación automática del thread para contratos especiales con Comercial y Legal (74%).</li>
+                        <li>Acción del responsable de la negociación si se presenta un rechazo (74%).</li>
+                    </ul>
                 </div>
             </div>
 
@@ -146,9 +194,19 @@
                     <div class="stat-item"><strong style="color: #1565c0;">97%</strong><br><small>Aprobación</small></div>
                     <div class="stat-item"><strong style="color: #e65100;">375</strong><br><small>Agentes</small></div>
                 </div>
-                <div style="font-size: 0.88rem; line-height: 1.4;">
-                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Oportunidades de Mejora:</strong>
-                    <span style="color: #555;">Alineación en la interpretación de los tres pilares comerciales fundamentales para la carga de catálogos.</span>
+                <div class="analysis-text">
+                    <strong style="color: #c62828; display: block; margin-bottom: 4px;">🚨 Preguntas con Mayor Afectación:</strong>
+                    <ul>
+                        <li>Identificar los tres pilares fundamentales para crear un "Catálogo Perfecto". (93% acierto)</li>
+                        <li>Porcentaje mínimo necesario que debe alcanzar cada métrica en vivo (93% acierto).</li>
+                    </ul>
+                </div>
+                <div class="analysis-text">
+                    <strong style="color: #2e7d32; display: block; margin-bottom: 4px;">🌟 Puntos Fuertes:</strong>
+                    <ul>
+                        <li>Configuración y significado de la selección múltiple en personalizaciones (93%).</li>
+                        <li>Ventajas principales de subir el menú en formato PDF frente a Portal Partners (93%).</li>
+                    </ul>
                 </div>
             </div>
 
