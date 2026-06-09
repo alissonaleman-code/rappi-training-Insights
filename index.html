@@ -275,6 +275,24 @@
         let esAdmin = false;
         const CLAVE_CORRECTA = "rappi2026"; 
 
+        // 🧠 SISTEMA DE PESTAÑAS INMUNE A ERRORES
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+            
+            if (tabId === 'agendamientos') {
+                document.getElementById('btn-tab-agendamientos').classList.add('active');
+            } else {
+                document.getElementById('btn-tab-metricas').classList.add('active');
+            }
+        }
+
+        // 📥 AL CARGAR LA PÁGINA: Recuperación ultra segura de datos
         document.addEventListener("DOMContentLoaded", () => {
             const guardadas = localStorage.getItem("rappi_metrics_cards");
             if (guardadas) {
@@ -286,20 +304,32 @@
                 activarVisualesDeEditor();
             } else {
                 document.getElementById('metrics-intro-text').innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
+                // Ocultar botes de basura de forma segura solo si existen elementos creados
+                setTimeout(() => {
+                    document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'none');
+                }, 100);
             }
         });
 
         function guardarTableroEnMemoria() {
-            const HTMLActual = document.getElementById('detail-body').innerHTML;
-            localStorage.setItem("rappi_metrics_cards", HTMLActual);
+            const container = document.getElementById('detail-body');
+            if (container) {
+                localStorage.setItem("rappi_metrics_cards", container.innerHTML);
+            }
         }
 
         function activarVisualesDeEditor() {
             esAdmin = true;
-            document.getElementById('main-upload-zone').style.display = 'block';
-            document.getElementById('metrics-intro-text').innerText = "Sube tus reportes de Excel para interpretar los datos automáticamente. Puedes eliminar tarjetas usando el botón rojo.";
-            document.getElementById('admin-login-btn').innerText = "🔓 Editor Activo";
-            document.getElementById('admin-login-btn').style.background = "#2e7d32";
+            const uploadZone = document.getElementById('main-upload-zone');
+            const introText = document.getElementById('metrics-intro-text');
+            const loginBtn = document.getElementById('admin-login-btn');
+
+            if(uploadZone) uploadZone.style.display = 'block';
+            if(introText) introText.innerText = "Sube tus reportes de Excel para interpretar los datos automáticamente. Puedes eliminar tarjetas usando el botón rojo.";
+            if(loginBtn) {
+                loginBtn.innerText = "🔓 Editor Activo";
+                loginBtn.style.background = "#2e7d32";
+            }
             
             document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'block');
         }
@@ -309,10 +339,12 @@
                 if(confirm("¿Deseas salir del Modo Editor? Tu tablero guardado seguirá visible para todos.")){
                     esAdmin = false;
                     localStorage.removeItem("rappi_admin_session");
-                    document.getElementById('main-upload-zone').style.display = 'none';
-                    document.getElementById('admin-login-btn').innerText = "🔒 Modo Editor";
-                    document.getElementById('admin-login-btn').style.background = "rgba(255,255,255,0.2)";
-                    document.getElementById('metrics-intro-text').innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
+                    if(document.getElementById('main-upload-zone')) document.getElementById('main-upload-zone').style.display = 'none';
+                    if(document.getElementById('admin-login-btn')) {
+                        document.getElementById('admin-login-btn').innerText = "🔒 Modo Editor";
+                        document.getElementById('admin-login-btn').style.background = "rgba(255,255,255,0.2)";
+                    }
+                    if(document.getElementById('metrics-intro-text')) document.getElementById('metrics-intro-text').innerText = "Inicia sesión en 'Modo Editor' arriba si deseas cargar o modificar análisis.";
                     document.querySelectorAll('.delete-card-btn').forEach(btn => btn.style.display = 'none');
                 }
                 return;
@@ -325,18 +357,6 @@
                 alert("¡Acceso concedido! El navegador recordará tu sesión de Editor.");
             } else if (pass !== null) {
                 alert("Clave incorrecta. Modo de solo lectura activado.");
-            }
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            if (tabId === 'agendamientos') {
-                document.getElementById('btn-tab-agendamientos').classList.add('active');
-            } else {
-                document.getElementById('btn-tab-metricas').classList.add('active');
             }
         }
 
@@ -372,69 +392,4 @@
                 alert("Por favor ingresa primero al 'Modo Editor' con tu clave arriba para poder eliminar.");
                 return;
             }
-            if (confirm("¿Segura que deseas eliminar definitivamente este análisis del tablero?")) {
-                const card = button.parentElement;
-                card.remove();
-                guardarTableroEnMemoria();
-            }
-        }
-
-        function calcularYMostrarMetricas(fileName, rows) {
-            const container = document.getElementById('detail-body');
-            
-            let totalNotas = 0;
-            let aprobados = 0;
-            let conteoAgentes = 0;
-
-            let conteoPreguntas = {};
-            let aciertosPreguntas = {};
-
-            rows.forEach(row => {
-                const llavePuntuacion = Object.keys(row).find(k => k.toLowerCase().includes('puntuaci') || k.toLowerCase().includes('score') || k.toLowerCase().includes('nota'));
-                let esEscalaDiez = false;
-                let notaLimpia = NaN;
-
-                if (llavePuntuacion && row[llavePuntuacion] !== undefined) {
-                    let valorRaw = String(row[llavePuntuacion]).trim();
-
-                    if (valorRaw.includes('/')) {
-                        const partes = valorRaw.split('/');
-                        notaLimpia = parseFloat(partes[0].trim());
-                        if (parseFloat(partes[1].trim()) === 10) esEscalaDiez = true;
-                    } else {
-                        notaLimpia = parseFloat(valorRaw);
-                        if (notaLimpia <= 10) esEscalaDiez = true;
-                    }
-
-                    if (!isNaN(notaLimpia)) {
-                        conteoAgentes++;
-                        let notaNormalizada = esEscalaDiez ? notaLimpia * 10 : notaLimpia;
-                        totalNotas += notaNormalizada;
-                        if (notaNormalizada >= 70) { aprobados++; }
-                    }
-                }
-
-                Object.keys(row).forEach(key => {
-                    if (key.includes('?') || key.toLowerCase().includes('pregunta') || key.length > 25) {
-                        if (key.toLowerCase().includes('correo') || key.toLowerCase().includes('nombre') || key.toLowerCase().includes('puntuaci') || key.toLowerCase().includes('marca de tiempo')) {
-                            return;
-                        }
-
-                        if (!conteoPreguntas[key]) {
-                            conteoPreguntas[key] = 0;
-                            aciertosPreguntas[key] = 0;
-                        }
-                        conteoPreguntas[key]++;
-                        
-                        const resp = String(row[key]).toLowerCase().trim();
-                        let notaAgente = esEscalaDiez ? notaLimpia * 10 : notaLimpia;
-                        if (!isNaN(notaAgente) && notaAgente >= 75 && resp !== "" && !resp.includes("incorrecto")) {
-                            aciertosPreguntas[key]++;
-                        }
-                    }
-                });
-            });
-
-            if (conteoAgentes === 0) { conteoAgentes = rows.length; }
-
-            const promedioGeneral = conteoAgentes > 0 ? Math.round(totalNotas / conteoAgentes) : 0;
+            if (confirm("¿Segura que deseas eliminar definitivamente
