@@ -143,7 +143,7 @@
             position: relative;
             overflow: hidden;
             width: 100%;
-            padding-top: 75%; /* Ajuste de altura ideal para ver las tablas */
+            padding-top: 75%; 
             border-radius: 8px;
             border: 1px solid #e2e8f0;
             background: #ffffff;
@@ -258,4 +258,38 @@
             </div>
 
             <div class="metric-card">
-                <h3 style="margin: 0 0 12px 0; font-size: 1.15rem; color: #fe43
+                <h3 style="margin: 0 0 12px 0; font-size: 1.15rem; color: #fe433c;">📋 Capacitación Catálogo Perfecto</h3>
+                <div class="sheet-frame-wrapper">
+                    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQAfvsneNRjcKTpcoz6CtAgZ1eBAcjhwEKuZLrr05w2Ve9DVCRcwwe4ejpVob7T28ZwWimAJ5LNRxpw/pubhtml?widget=true&amp;headers=false"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function switchTab(buttonElement, tabId) {
+            // Oculta todas las secciones de contenido
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Quita la línea roja activa de todos los botones
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Muestra la sección correspondiente
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+            
+            // Activa la línea roja en el botón que se tocó
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
